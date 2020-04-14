@@ -23,7 +23,7 @@ TODO
 Install the testing requirements:
 
 ```bash
-pip install .[testing]
+pip3 install .[testing]
 ```
 
 Use the following command to run all tests:
