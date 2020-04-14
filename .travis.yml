@@ -9,7 +9,11 @@ install:
 
 # command to run tests
 script:
-  - pytest --cov=platiagro --cov-report=xml
+cd knapsack_problem/
+python -m pytest --cov=knapsack_problem --cov-report=xml
+cd ..
+cd dairy_cooperative/
+python -m pytest --cov=dairy_cooperative --cov-report=xml
 
 after_script:
   - codecov
