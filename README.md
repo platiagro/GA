@@ -1,4 +1,4 @@
-# GA Genetic Algorithm applications
+# GA Genetic Algorithm Application
 
 [![Build Status](https://travis-ci.org/platiagro/ga.svg)](https://travis-ci.org/platiagro/ga)
 [![codecov](https://codecov.io/gh/platiagro/ga/graph/badge.svg)](https://codecov.io/gh/platiagro/ga)
