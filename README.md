@@ -9,7 +9,6 @@
 
 - [Python 3.6](https://www.python.org/downloads/)
 
-
 ## Quick Start
 
 Make sure you have all requirements installed on your computer.
