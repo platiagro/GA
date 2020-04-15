@@ -90,14 +90,24 @@ cand_pop = np.array(pop_full)
 
 class TestFiles(unittest.TestCase):
 
-    def test___init__(self):
+    def test___init__ok(self):
+        result = ProductsList(20)
+        self.assertNotEqual(result, "ok")
+#----------------------------------------------------------
+    def test___init__blank(self):
         with self.assertRaises(ValueError):
             nova_lista = ProductsList(None)
 #-----------------------------------------------------------
-    def test_fitness_evaluation(self):
+#-----------------------------------------------------------
+    def test_fitness_evaluation_blank(self):
         with self.assertRaises(ValueError):
             cand_full.fitness_evaluation(None)
-#----------------------------------------------------------- 
+#-----------------------------------------------------------
+    def test_fitness_evaluation_ok(self):
+        result = cand_full.fitness_evaluation(obj_list_full)
+        self.assertNotEqual(result, "ok")
+#-----------------------------------------------------------
+#-----------------------------------------------------------
     def test_stop_search_hour_limit_blank(self):
         with self.assertRaises(ValueError):
             stop_search(0, 1, 1, 1, cand_pop, best_fit_array_full, medium_fit_array_full, 1, obj_list_full)

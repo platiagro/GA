@@ -48,8 +48,6 @@ class ObjectsList:
     def __init__(self, qtd_obj):
         if qtd_obj == None:
             raise ValueError
-        if qtd_obj <= 0:
-            raise ValueError
 
         weight_list = []
         benefit_list = []
@@ -72,13 +70,23 @@ cand_pop = np.array(pop_full)
 
 class TestFiles(unittest.TestCase):
 
-    def test___init__(self):
+    def test___init__blank(self):
         with self.assertRaises(ValueError):
             nova_lista = ObjectsList(None)
+#-----------------------------------------------------------
+    def test___init__ok(self):
+        result = ObjectsList(20)
+        self.assertNotEqual(result, "ok")
+#-----------------------------------------------------------            
 #-----------------------------------------------------------    
-    def test_fitness_evaluation(self):
+    def test_fitness_evaluation_blank(self):
         with self.assertRaises(ValueError):
             cand_full.fitness_evaluation(None)
+#-----------------------------------------------------------
+    def test_fitness_evaluation_ok(self):
+        result = cand_full.fitness_evaluation(obj_list_full)
+        self.assertNotEqual(result, "ok")
+#-----------------------------------------------------------            
 #-----------------------------------------------------------            
     def test_stop_search_weight_limit_blank(self):
         with self.assertRaises(ValueError):
