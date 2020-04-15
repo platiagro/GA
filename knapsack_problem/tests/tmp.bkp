@@ -10,6 +10,55 @@ import time
 from knapsack_problem.knapsack_ga import Candidate, ObjectsList, stop_search, search, apply_selection, apply_crossover, apply_mutation, create_initial_population
 
 
+class Candidate:
+    np_dna = np.array([])
+    weight = 0
+    benefit = 0
+
+    def get_weight(self):
+        return self.weight
+
+    def get_benefit(self):
+        return self.benefit
+
+    def fitness_evaluation(self, prod_list):
+        if prod_list == None:
+            raise ValueError
+
+        self.weight = np.sum(self.np_dna * prod_list.np_weight_list)
+        self.benefit = np.sum(self.np_dna * prod_list.np_benefit_list)
+
+    def __init__(self, prod_list):
+        dna = []
+        tot = len(prod_list.np_weight_list)
+
+        for pos in range(0, tot):
+            dna.append(randint(0, 1))
+
+        np_dna_new = np.array(dna)
+        self.np_dna = np_dna_new
+        self.fitness_evaluation(prod_list)
+
+
+
+class ObjectsList:
+    np_weight_list = np.array([])
+    np_benefit_list = np.array([])
+
+    def __init__(self, qtd_obj):
+        if qtd_obj == None:
+            raise ValueError
+
+        weight_list = []
+        benefit_list = []
+
+        for pos in range(0, qtd_obj):
+            weight_list.append(randint(100, 2000))
+            benefit_list.append(randint(1, 10))
+
+        self.np_weight_list = np.array(weight_list)
+        self.np_benefit_list = np.array(benefit_list)
+
 
 best_fit_array_full = [1]
 medium_fit_array_full = [1]
