@@ -32,6 +32,9 @@ class Candidate:
         self.profit = np.sum( self.np_dna * prod_list.np_profit_list )
 
     def __init__( self, prod_list ):
+        if prod_list == None:
+            raise ValueError
+
         dna = []
         tot = len( prod_list.np_hours_list )
         limite_lotes = 20  #Mais comum seria usar 1
@@ -52,8 +55,6 @@ class ProductsList:
 
     def __init__( self, qtd_obj ):
         if qtd_obj == None:
-            raise ValueError
-        if qtd_obj <= 0:
             raise ValueError
 
         hours_list = []

@@ -8,7 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 
-from dairy_cooperative.cooperative_ga import stop_search, search, apply_selection, apply_crossover, apply_mutation, create_initial_population
+from dairy_cooperative.cooperative_ga import Candidate, ProductsList, stop_search, search, apply_selection, apply_crossover, apply_mutation, create_initial_population
 
 
 class Candidate:
@@ -35,6 +35,9 @@ class Candidate:
         self.profit = np.sum( self.np_dna * prod_list.np_profit_list )
 
     def __init__( self, prod_list ):
+        if prod_list == None:
+            raise ValueError
+
         dna = []
         tot = len( prod_list.np_hours_list )
         limite_lotes = 20  #Mais comum seria usar 1
@@ -54,7 +57,7 @@ class ProductsList:
     np_lista_margens = np.array( [] ) #Benefit
 
     def __init__( self, qtd_obj ):
-        if qtd_obj <= 0:
+        if qtd_obj == None:
             raise ValueError
 
         hours_list = []
@@ -86,6 +89,14 @@ cand_pop = np.array(pop_full)
 
 class TestFiles(unittest.TestCase):
 
+    def test___init__(self):
+        with self.assertRaises(ValueError):
+            nova_lista = ProductsList(None)
+#-----------------------------------------------------------
+    def test_fitness_evaluation(self):
+        with self.assertRaises(ValueError):
+            cand_full.fitness_evaluation(None)
+#-----------------------------------------------------------
     def test_stop_search_hour_limit_blank(self):
         with self.assertRaises(ValueError):
             stop_search(0, 1, 1, 1, cand_pop, best_fit_array_full, medium_fit_array_full, 1, obj_list_full)

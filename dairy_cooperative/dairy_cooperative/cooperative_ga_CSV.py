@@ -54,8 +54,6 @@ class ProductsList:
     def __init__( self, qtd_obj ):
         if qtd_obj == None:
             raise ValueError
-        if qtd_obj <= 0:
-            raise ValueError
 
         hours_list = []
         milk_list = []

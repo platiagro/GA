@@ -7,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 
-from knapsack_problem.knapsack_ga import stop_search, search, apply_selection, apply_crossover, apply_mutation, create_initial_population
+from knapsack_problem.knapsack_ga import Candidate, ObjectsList, stop_search, search, apply_selection, apply_crossover, apply_mutation, create_initial_population
 
 
 class Candidate:
@@ -72,6 +72,14 @@ cand_pop = np.array(pop_full)
 
 class TestFiles(unittest.TestCase):
 
+    def test___init__(self):
+        with self.assertRaises(ValueError):
+            nova_lista = ObjectsList(None)
+#-----------------------------------------------------------    
+    def test_fitness_evaluation(self):
+        with self.assertRaises(ValueError):
+            cand_full.fitness_evaluation(None)
+#-----------------------------------------------------------            
     def test_stop_search_weight_limit_blank(self):
         with self.assertRaises(ValueError):
             stop_search(0, 1, cand_pop, best_fit_array_full, medium_fit_array_full, 1, obj_list_full)

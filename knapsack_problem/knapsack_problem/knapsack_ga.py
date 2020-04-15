@@ -45,8 +45,6 @@ class ObjectsList:
     def __init__(self, qtd_obj):
         if qtd_obj == None:
             raise ValueError
-        if qtd_obj <= 0:
-            raise ValueError
 
         weight_list = []
         benefit_list = []
