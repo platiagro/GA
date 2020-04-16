@@ -16,8 +16,9 @@ medium_fit_array_full = [1]
 obj_list_full = ObjectsList(20)
 cand_full = Candidate(obj_list_full)
 pop_full = []
-pop_full.append(cand_full)
+pop_full.append(Candidate(obj_list_full))
 cand_pop = np.array(pop_full)
+
 
 class TestFiles(unittest.TestCase):
 

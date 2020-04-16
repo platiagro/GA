@@ -90,7 +90,9 @@ def stop_search(weight_limit, weight_tolerance, population, best_fit_array, medi
         benefit_amount += cand.benefit
         wigth_amount += cand.weight
         #Precisa pular a primeira geracao porque ainda nao foi filtrada
-        if generation > 1:
+        if generation < 1:
+            generation_new = 1
+        else:    
             if cand.benefit > best_benefit:
                 best_candidate = cand
 
