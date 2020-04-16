@@ -25,13 +25,17 @@ cand_pop = np.array(pop_full)
 
 class TestFiles(unittest.TestCase):
 
-    def test___init__ok(self):
+    def test_prod_list__init__ok(self):
         result = ProductsList(20)
         self.assertNotEqual(result, "ok")
 #----------------------------------------------------------
-    def test___init__blank(self):
+    def test_prod_list__init__blank(self):
         with self.assertRaises(ValueError):
             nova_lista = ProductsList(None)
+#-----------------------------------------------------------
+    def test_cand__init__blank(self):
+        with self.assertRaises(ValueError):
+            novo_cand = Candidate(None)
 #-----------------------------------------------------------
 #-----------------------------------------------------------
     def test_fitness_evaluation_blank(self):

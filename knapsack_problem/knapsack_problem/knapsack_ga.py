@@ -19,7 +19,7 @@ class Candidate:
         return self.benefit
 
     def fitness_evaluation(self, prod_list):
-        if prod_list == None:
+        if prod_list is None:
             raise ValueError
 
         self.weight = np.sum(self.np_dna * prod_list.np_weight_list)
@@ -43,7 +43,7 @@ class ObjectsList:
     np_benefit_list = np.array([])
 
     def __init__(self, qtd_obj):
-        if qtd_obj == None:
+        if qtd_obj is None:
             raise ValueError
 
         weight_list = []
@@ -63,15 +63,15 @@ def stop_search(weight_limit, weight_tolerance, population, best_fit_array, medi
         raise ValueError
     if weight_tolerance <= 0:
         raise ValueError
-    if population == None:
+    if population is None:
         raise ValueError
-    if best_fit_array == None:
+    if best_fit_array is None:
         raise ValueError
-    if medium_fit_array == None:
+    if medium_fit_array is None:
         raise ValueError
     if generation <= 0:
         raise ValueError
-    if obj_list == None:
+    if obj_list is None:
         raise ValueError
 
     ret = False
@@ -263,7 +263,7 @@ def apply_selection(qtd_pop, weight_limit, pop_inter):
         raise ValueError
     if weight_limit <= 0:
         raise ValueError
-    if pop_inter == None:
+    if pop_inter is None:
         raise ValueError
     
     #Fase 1: elimina candidatos acima do peso ate limite da quantidade desejada para a populacao
@@ -303,9 +303,9 @@ def apply_selection(qtd_pop, weight_limit, pop_inter):
 def apply_crossover(crossover_qt, cand_to_repro, obj_list):
     if crossover_qt <= 0:
         raise ValueError
-    if cand_to_repro == None:
+    if cand_to_repro is None:
         raise ValueError
-    if obj_list == None:
+    if obj_list is None:
         raise ValueError
 
     #A qtd_crossover indica a quantidade de descendentes a ser produzida
@@ -376,9 +376,9 @@ def apply_crossover(crossover_qt, cand_to_repro, obj_list):
 def apply_mutation(wished_qt, cand_to_repro, obj_list):
     if wished_qt <= 0:
         raise ValueError
-    if cand_to_repro == None:
+    if cand_to_repro is None:
         raise ValueError
-    if obj_list == None:
+    if obj_list is None:
         raise ValueError
 
     #Cada candidato tem seu vetor de zeros e uns (DNA[])
@@ -420,7 +420,7 @@ def apply_mutation(wished_qt, cand_to_repro, obj_list):
 def create_initial_population(init_pop_qt, obj_list):
     if init_pop_qt <= 0:
         raise ValueError
-    if obj_list == None:
+    if obj_list is None:
         raise ValueError
     
     pop = []

@@ -24,7 +24,7 @@ class Candidate:
         return self.profit
 
     def fitness_evaluation( self, prod_list ):
-        if prod_list == None:
+        if prod_list is None:
             raise ValueError
 
         self.hour = np.sum( self.np_dna * prod_list.np_hours_list )
@@ -32,7 +32,7 @@ class Candidate:
         self.profit = np.sum( self.np_dna * prod_list.np_profit_list )
 
     def __init__( self, prod_list ):
-        if prod_list == None:
+        if prod_list is None:
             raise ValueError
 
         dna = []
@@ -54,7 +54,7 @@ class ProductsList:
     np_lista_margens = np.array( [] ) #Benefit
 
     def __init__( self, qtd_obj ):
-        if qtd_obj == None:
+        if qtd_obj is None:
             raise ValueError
 
         hours_list = []
@@ -80,15 +80,15 @@ def stop_search( hour_limit, hour_tolerance, milk_limit, milk_tolerance, populat
         raise ValueError
     if milk_tolerance <= 0:
         raise ValueError
-    if population == None:
+    if population is None:
         raise ValueError
-    if best_fit_array == None:
+    if best_fit_array is None:
         raise ValueError
-    if medium_fit_array == None:
+    if medium_fit_array is None:
         raise ValueError
     if generation <= 0:
         raise ValueError
-    if prod_list == None:
+    if prod_list is None:
         raise ValueError
 
     ret = False
@@ -297,7 +297,7 @@ def apply_selection(pop_qt, hour_limit, milk_limit, pop_inter):
         raise ValueError
     if milk_limit <= 0:
         raise ValueError
-    if pop_inter == None:
+    if pop_inter is None:
         raise ValueError
     
     #Fase 1: elimina candidatos acima do limite de hora ate limite da quantidade desejada para a populacao
@@ -358,9 +358,9 @@ def apply_selection(pop_qt, hour_limit, milk_limit, pop_inter):
 def apply_crossover(crossover_qt, cand_to_repro, prod_list):
     if crossover_qt <= 0:
         raise ValueError
-    if cand_to_repro == None:
+    if cand_to_repro is None:
         raise ValueError
-    if prod_list == None:
+    if prod_list is None:
         raise ValueError
 
     #A qtd_crossover indica a quantidade de descendentes a ser produzida
@@ -431,9 +431,9 @@ def apply_crossover(crossover_qt, cand_to_repro, prod_list):
 def apply_mutation(wished_qt, cand_to_repro, prod_list):
     if wished_qt <= 0:
         raise ValueError
-    if cand_to_repro == None:
+    if cand_to_repro is None:
         raise ValueError
-    if prod_list == None:
+    if prod_list is None:
         raise ValueError
 
     #Cada candidato tem seu vetor de zeros e uns ( DNA[] )
@@ -476,7 +476,7 @@ def apply_mutation(wished_qt, cand_to_repro, prod_list):
 def create_initial_population( init_pop_qt, prod_list ):
     if init_pop_qt <= 0:
         raise ValueError
-    if prod_list == None:
+    if prod_list is None:
         raise ValueError
     
     pop = []
@@ -489,9 +489,9 @@ def create_initial_population( init_pop_qt, prod_list ):
 
 
 if __name__ == '__main__':
-#    hour_tolerance = 1
-#    milk_tolerance = 10
+    hour_tolerance = 1
+    milk_tolerance = 10
 
-#    search( hour_tolerance = 1, milk_tolerance = 10 )
-    search()
+    search( hour_tolerance = 1, milk_tolerance = 10 )
+
     

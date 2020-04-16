@@ -5,7 +5,6 @@
 import csv,sys
 from random import uniform, randint
 import numpy as np
-import matplotlib.pyplot as plt
 import time
 
 
@@ -25,7 +24,7 @@ class Candidate:
         return self.profit
 
     def fitness_evaluation( self, prod_list ):
-        if prod_list == None:
+        if prod_list is None:
             raise ValueError
 
         self.hour = np.sum( self.np_dna * prod_list.np_hours_list )
@@ -33,6 +32,9 @@ class Candidate:
         self.profit = np.sum( self.np_dna * prod_list.np_profit_list )
 
     def __init__( self, prod_list ):
+        if prod_list is None:
+            raise ValueError
+
         dna = []
         tot = len( prod_list.np_hours_list )
         lots_limit = 20  #Mais comum seria usar 1
@@ -52,7 +54,7 @@ class ProductsList:
     np_profit_list = np.array( [] ) #Benefit
 
     def __init__( self, qtd_obj ):
-        if qtd_obj == None:
+        if qtd_obj is None:
             raise ValueError
 
         hours_list = []
@@ -78,15 +80,15 @@ def stop_search( hour_limit, hour_tolerance, milk_limit, milk_tolerance, populat
         raise ValueError
     if milk_tolerance <= 0:
         raise ValueError
-    if population == None:
+    if population is None:
         raise ValueError
-    if best_fit_array == None:
+    if best_fit_array is None:
         raise ValueError
-    if medium_fit_array == None:
+    if medium_fit_array is None:
         raise ValueError
     if generation <= 0:
         raise ValueError
-    if prod_list == None:
+    if prod_list is None:
         raise ValueError
 
     ret = False
@@ -182,7 +184,7 @@ def search( hour_tolerance, milk_tolerance, prod_file_name ):
         raise ValueError
     if milk_tolerance <= 0:
         raise ValueError
-    if prod_file_name == "":
+    if prod_file_name is None:
         raise ValueError
 
     ini_pop_qt = 200  #Usar 1000
@@ -200,7 +202,7 @@ def search( hour_tolerance, milk_tolerance, prod_file_name ):
 
     np_prod_array = np.array([])
     #prod_file_name = "cooperativa_leite/cooperativa_leite/cooperativa_100.csv"
-    if prod_file_name == None:
+    if prod_file_name == "":
         print("\nFile not found. Using random products generation\n")
     else:
         try:
@@ -233,22 +235,23 @@ def search( hour_tolerance, milk_tolerance, prod_file_name ):
     if available_products_qt <= 0:
         print("\nProduct amount limit should be higher than zero!\n")
         exit()
-    else:    
-        if available_products_qt > 1010:
-            print("Amounts higher than 1010 are forbiden!")
-            exit()
-        elif available_products_qt <= 15:
-            print("There are " + str(2 ** available_products_qt) + " possible solutions for this products amount")
-        else:
-            possible_solutions = 2 ** available_products_qt
-            search_years = possible_solutions / (3600 * 24 * 365 * 1000000)
-            print("There are {0:+5.2E} possible solutions for this products amount".format(possible_solutions))
-            if available_products_qt > 44:
-                print("\nIf we had a computer capable of processing 1.000.000 candidates each second")
-                print("and considering that one year has (60s * 60m * 24h * 365d) 31.536.000 seconds")
-                print("it would take {0:+5.2e} years to find the best solution.".format(search_years))
-                print("Therefore, we'll search for just a good solution, not for the best one.")
-                print("The good solution will be the candidate with the best profit within the limit of available hours and milk in a week \n")
+        
+    if available_products_qt > 1010:
+        print("Amounts higher than 1010 are forbiden!")
+        exit()
+        
+    if available_products_qt <= 15:
+        print("There are " + str(2 ** available_products_qt) + " possible solutions for this products amount")
+    else:
+        possible_solutions = 2 ** available_products_qt
+        search_years = possible_solutions / (3600 * 24 * 365 * 1000000)
+        print("There are {0:+5.2E} possible solutions for this products amount".format(possible_solutions))
+        if available_products_qt > 44:
+            print("\nIf we had a computer capable of processing 1.000.000 candidates each second")
+            print("and considering that one year has (60s * 60m * 24h * 365d) 31.536.000 seconds")
+            print("it would take {0:+5.2e} years to find the best solution.".format(search_years))
+            print("Therefore, we'll search for just a good solution, not for the best one.")
+            print("The good solution will be the candidate with the best profit within the limit of available hours and milk in a week \n")
 
     prod_list = ProductsList( available_products_qt )
     populat = create_initial_population( ini_pop_qt, prod_list )
@@ -305,15 +308,6 @@ def search( hour_tolerance, milk_tolerance, prod_file_name ):
     minutes, seconds = divmod(r, 60)
     print("Elapsed time: {hours:0>2}:{minutes:0>2}:{seconds:05.3f}".format(hours=int(hours), minutes=int(minutes), seconds=seconds))
 
-    #Mostra evolucao do fitness
-    plt.rcParams['figure.figsize'] = (8, 4)
-    plt.plot(xItera, medium_fit_array, color = 'green')  #Fitness medio
-    plt.scatter(xItera, best_fit_array, marker = "*", color = 'red') #Melhor fitness
-    plt.title('Profit (fitness) evolution')
-    plt.xlabel('Iteration')
-    plt.ylabel('Fitness (profit)')
-    plt.grid(True)
-    plt.show()
 
 
 def apply_selection(pop_qt, hour_limit, milk_limit, pop_inter):
@@ -323,7 +317,7 @@ def apply_selection(pop_qt, hour_limit, milk_limit, pop_inter):
         raise ValueError
     if milk_limit <= 0:
         raise ValueError
-    if pop_inter == None:
+    if pop_inter is None:
         raise ValueError
     
     #Fase 1: elimina candidatos acima do limite de hora ate limite da quantidade desejada para a populacao
@@ -384,9 +378,9 @@ def apply_selection(pop_qt, hour_limit, milk_limit, pop_inter):
 def apply_crossover(crossover_qt, cand_to_repro, prod_list):
     if crossover_qt <= 0:
         raise ValueError
-    if cand_to_repro == None:
+    if cand_to_repro is None:
         raise ValueError
-    if prod_list == None:
+    if prod_list is None:
         raise ValueError
 
     #A crossover_qt indica a quantidade de descendentes a ser produzida
@@ -457,9 +451,9 @@ def apply_crossover(crossover_qt, cand_to_repro, prod_list):
 def apply_mutation(wished_qt, cand_to_repro, prod_list):
     if wished_qt <= 0:
         raise ValueError
-    if cand_to_repro == None:
+    if cand_to_repro is None:
         raise ValueError
-    if prod_list == None:
+    if prod_list is None:
         raise ValueError
 
     #Cada candidato tem seu vetor de zeros e uns ( DNA[] )
@@ -502,7 +496,7 @@ def apply_mutation(wished_qt, cand_to_repro, prod_list):
 def create_initial_population( init_pop_qt, prod_list ):
     if init_pop_qt <= 0:
         raise ValueError
-    if prod_list == None:
+    if prod_list is None:
         raise ValueError
     
     pop = []
@@ -515,14 +509,13 @@ def create_initial_population( init_pop_qt, prod_list ):
 
 
 if __name__ == '__main__':
-#    hour_tolerance = 1
-#    milk_tolerance = 10
+    hour_tolerance = 1
+    milk_tolerance = 10
 
-#    if len(sys.argv) > 1:
-#        prod_file_name = sys.argv[1]
-#    else:
-#        prod_file_name = None
+    if len(sys.argv) > 1:
+        prod_file_name = sys.argv[1]
+    else:
+        prod_file_name = ""
 
-#    search( hour_tolerance = 1, milk_tolerance = 10, prod_file_name = "" )
-    search()
+    search( hour_tolerance = 1, milk_tolerance = 10, prod_file_name = "" )
     
