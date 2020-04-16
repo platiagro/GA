@@ -87,13 +87,25 @@ class TestFiles(unittest.TestCase):
         with self.assertRaises(ValueError):
             search(0, 1)
 #-----------------------------------------------------------
+    def test_search_hour_neg(self):
+        with self.assertRaises(ValueError):
+            search(-1, 1)
+#-----------------------------------------------------------
     def test_search_milk_tolerance_blank(self):
         with self.assertRaises(ValueError):
             search(1, 0)
 #-----------------------------------------------------------
+    def test_search_milk_neg(self):
+        with self.assertRaises(ValueError):
+            search(1, -1)
+#-----------------------------------------------------------
     def test_search_ok(self):
         with self.assertRaises(ValueError):
             search(1, 1)
+#-----------------------------------------------------------
+    def test_search_ok2(self):
+        with self.assertRaises(ValueError):
+            search(150, 150)
 #-----------------------------------------------------------
 #-----------------------------------------------------------
     def test_apply_selection_pop_qt_blank(self):

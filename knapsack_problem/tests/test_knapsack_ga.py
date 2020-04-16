@@ -76,9 +76,17 @@ class TestFiles(unittest.TestCase):
         with self.assertRaises(ValueError):
             search(0)
 #-----------------------------------------------------------
+    def test_search_weight_neg(self):
+        with self.assertRaises(ValueError):
+            search(-1)
+#-----------------------------------------------------------
     def test_search_ok(self):
         with self.assertRaises(ValueError):
             search(1)
+#-----------------------------------------------------------
+    def test_search_ok2(self):
+        with self.assertRaises(ValueError):
+            search(150)
 #-----------------------------------------------------------
 #-----------------------------------------------------------
     def test_apply_selection_pop_qt_blank(self):
@@ -144,4 +152,4 @@ class TestFiles(unittest.TestCase):
         result = create_initial_population(1, obj_list_full)
         self.assertNotEqual(result, "ok")
 #-----------------------------------------------------------
-#-----------------------------------------------------------
+
