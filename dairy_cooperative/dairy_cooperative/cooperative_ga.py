@@ -489,8 +489,9 @@ def create_initial_population( init_pop_qt, prod_list ):
 
 
 if __name__ == '__main__':
-    hour_tolerance = 1
-    milk_tolerance = 10
+#    hour_tolerance = 1
+#    milk_tolerance = 10
 
-    search( hour_tolerance = 1, milk_tolerance = 10 )
+#    search( hour_tolerance = 1, milk_tolerance = 10 )
+    search()
     

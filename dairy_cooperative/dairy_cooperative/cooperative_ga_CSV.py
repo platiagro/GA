@@ -515,13 +515,14 @@ def create_initial_population( init_pop_qt, prod_list ):
 
 
 if __name__ == '__main__':
-    hour_tolerance = 1
-    milk_tolerance = 10
+#    hour_tolerance = 1
+#    milk_tolerance = 10
 
-    if len(sys.argv) > 1:
-        prod_file_name = sys.argv[1]
-    else:
-        prod_file_name = None
+#    if len(sys.argv) > 1:
+#        prod_file_name = sys.argv[1]
+#    else:
+#        prod_file_name = None
 
-    search( hour_tolerance = 1, milk_tolerance = 10, prod_file_name = "" )
+#    search( hour_tolerance = 1, milk_tolerance = 10, prod_file_name = "" )
+    search()
     

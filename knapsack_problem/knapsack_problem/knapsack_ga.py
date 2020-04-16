@@ -430,7 +430,8 @@ def create_initial_population(init_pop_qt, obj_list):
 
 
 if __name__ == '__main__':
-    weight_tolerance = 100 #100 gramas
+#    weight_tolerance = 100 #100 gramas
 
-    search(weight_tolerance)
+#    search(weight_tolerance)
+    search()
     
