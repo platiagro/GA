@@ -250,7 +250,7 @@ def search_fields( resources, weight_tolerance = None ):
     
         intermed_pop_mutation = np.append(cand_for_reproduction, intermed_pop_crossover)
         intermed_pop_mutation = np.append(intermed_pop_mutation, intermed_pop_mutation)
-        print("Size of intermed pop: {0}".format(len(intermed_pop_mutation)))
+        #print("Size of intermed pop: {0}".format(len(intermed_pop_mutation)))
 
         population = apply_selection(ini_pop_qt, intermed_pop_mutation)
 
@@ -308,7 +308,7 @@ def search_harvesters( resources ):
     
         intermed_pop_mutation = np.append(cand_for_reproduction, intermed_pop_crossover)
         intermed_pop_mutation = np.append(intermed_pop_mutation, intermed_pop_mutation)
-        print("Size of intermed pop: {0}".format(len(intermed_pop_mutation)))
+        #print("Size of intermed pop: {0}".format(len(intermed_pop_mutation)))
 
         population = apply_selection(ini_pop_qt, intermed_pop_mutation)
 
