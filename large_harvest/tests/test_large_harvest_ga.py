@@ -75,19 +75,27 @@ class TestFiles(unittest.TestCase):
 #-----------------------------------------------------------
     def test_search_fields_resources_blank(self):
         with self.assertRaises(ValueError):
-            search_fields(None)
+            search_fields(None, 500)
+#-----------------------------------------------------------
+    def test_search_fields_weigth_blank(self):
+        with self.assertRaises(ValueError):
+            search_fields(resources_list_full, 0)
 #-----------------------------------------------------------
     def test_search_fields_ok(self):
-        result = search_fields(resources_list_full, 100)
+        result = search_fields(resources_list_full, 500)
         self.assertEqual(result, "ok") 
 #-----------------------------------------------------------
 #-----------------------------------------------------------
     def test_search_harvesters_resources_blank(self):
         with self.assertRaises(ValueError):
-            search_harvesters(None)
+            search_harvesters(None, 500)
+#-----------------------------------------------------------    
+    def test_search_harvesters_weigth_blank(self):
+        with self.assertRaises(ValueError):
+            search_harvesters(resources_list_full, 0)
 #-----------------------------------------------------------
     def test_search_harvesters_ok(self):
-        result = search_harvesters(resources_list_full)
+        result = search_harvesters(resources_list_full, 500)
         self.assertEqual(result, "ok") 
 #-----------------------------------------------------------
 #-----------------------------------------------------------

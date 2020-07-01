@@ -199,8 +199,14 @@ class Resources:
 
 
 
-def search_fields( resources, weight_tolerance = None ):
+def search_fields( resources, weight_tolerance ):
     if resources is None:
+        raise ValueError
+
+    if weight_tolerance is None:
+        raise ValueError
+
+    if weight_tolerance <= 0:
         raise ValueError
 
     ini_pop_qt = 200  #hint 1000   200
@@ -209,15 +215,6 @@ def search_fields( resources, weight_tolerance = None ):
     crossover_rate = 0.6 #hint 20%
 
     selected_cand = np.array( [] )
-
-    if weight_tolerance is None:
-        try:
-            weight_tolerance = int(float(input("\nHarvest weight tolerance (Ton): ")))
-            if weight_tolerance <= 0:
-                print("\nHarvest weight tolerance must be higher than zero!\n")
-                raise ValueError
-        except:
-            raise ValueError
 
     populat = create_initial_step1_population(ini_pop_qt, resources)
     population = sorted(populat, key = Step1_candidate.get_profit, reverse = False)
@@ -264,8 +261,14 @@ def search_fields( resources, weight_tolerance = None ):
 
 
 
-def search_harvesters( resources ):
+def search_harvesters( resources, weight_tolerance ):
     if resources is None:
+        raise ValueError
+
+    if weight_tolerance is None:
+        raise ValueError
+
+    if weight_tolerance <= 0:
         raise ValueError
 
     ini_pop_qt = 200  #hint 1000   200
@@ -676,6 +679,16 @@ if __name__ == '__main__':
         print("\nParameters load failure\n")
         exit()
 
+
+    try:
+        weight_tolerance = int(float(input("\nHarvest weight tolerance (Ton): ")))
+        if weight_tolerance <= 0:
+            print("\nHarvest weight tolerance must be higher than zero!\n")
+            exit()
+    except:
+        exit()
+
+
     exec_init = time.time()     
 
     print("\n##################################################################")
@@ -684,7 +697,7 @@ if __name__ == '__main__':
     print("#                                                                #")
     print("##################################################################")
     
-    search_fields( resources )  
+    search_fields( resources, weight_tolerance )  
 
     exec_end = time.time()
     diff = exec_end - exec_init	
@@ -692,7 +705,7 @@ if __name__ == '__main__':
     minutes, seconds = divmod(r, 60)
     print("\nStep 1: elapsed time: {hours:0>2}:{minutes:0>2}:{seconds:05.3f}".format(hours=int(hours), minutes=int(minutes), seconds=seconds))
     
-    search_harvesters( resources )
+    search_harvesters( resources, weight_tolerance )
 
     exec_end = time.time()
     diff = exec_end - exec_init	
