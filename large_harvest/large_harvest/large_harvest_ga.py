@@ -149,7 +149,6 @@ class Resources:
                 print("=====> none")
 
             print("\n")
-        print("\n")
 
 
 
