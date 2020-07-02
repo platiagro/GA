@@ -5,6 +5,7 @@
 import csv,sys
 from random import uniform, randint
 import numpy as np
+import pandas as pd
 import time
 
 
@@ -152,8 +153,8 @@ class Resources:
 
 
 
-    def __init__( self, input_file_name ):
-        if input_file_name == "":
+    def __init__( self, pd_resources ):
+        if pd_resources is None:
             raise ValueError
         
         file_input = []
@@ -164,28 +165,24 @@ class Resources:
         harvester_hour_capacity_array = []
 
         try:
-            input_file = csv.reader(open(input_file_name), delimiter = ";")
-
-            for [Resource, Grinding_harvest_limit, Field_harvest_capacity, Field_hour_capacity, Harvester_hour_capacity] in input_file: 
-                file_input = [Resource, Grinding_harvest_limit, Field_harvest_capacity, Field_hour_capacity, Harvester_hour_capacity]
+            for index in pd_resources.itertuples():
                 #     0                 1                    2              3                4
                 #  Resource; Grinding_harvest_limit; Field_harvest_capacity; Field_hour_capacity; Harvester_hour_capacity
-                if file_input[0][0:1] != "#":
-                    if file_input[0][0:4].lower() == "mill":
-                        self.grinding_harvest_limit += int(file_input[1])
+                if index[1][0:4].lower() == "mill":
+                    self.grinding_harvest_limit += int(index[2])
 
-                    elif file_input[0][0:5].lower() == "field":
-                        self.field_id.append(file_input[0])
-                        field_harvest_capacity_array.append(int(file_input[2]))
-                        field_hour_capacity_array.append(int(file_input[3]))
+                elif index[1][0:5].lower() == "field":
+                    self.field_id.append(index[1])
+                    field_harvest_capacity_array.append(int(index[3]))
+                    field_hour_capacity_array.append(int(index[4]))
 
-                    elif file_input[0][0:5].lower() == "harve":  
-                        self.harvester_id.append(file_input[0])  
-                        harvester_hour_capacity_array.append(int(file_input[4]))
+                elif index[1][0:5].lower() == "harve":  
+                    self.harvester_id.append(index[1])  
+                    harvester_hour_capacity_array.append(int(index[5]))
 
-                    else:
-                        print("\nUnknown file resource\n")
-                        raise ValueError
+                else:
+                    print("\nUnknown file resource\n")
+                    raise ValueError
 
             self.np_field_harvest_capacity = np.array(field_harvest_capacity_array)
             self.np_field_hour_capacity = np.array(field_hour_capacity_array)
@@ -674,7 +671,8 @@ if __name__ == '__main__':
         exit()
 
     try:
-        resources = Resources(resources_file_name)
+        pd_resources = pd.read_csv( resources_file_name, sep = ';' )
+        resources = Resources(pd_resources)
     except:
         print("\nParameters load failure\n")
         exit()

@@ -5,6 +5,7 @@ from unittest import TestCase
 import csv,sys
 from random import uniform, randint
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 import time
 
@@ -14,7 +15,9 @@ from large_harvest.large_harvest_ga import Step1_candidate, Step2_candidate, Res
 best_fit_array_full = [1]
 medium_fit_array_full = [1]
 
-resources_list_full = Resources("large_harvest/large_harvest_5_com_15.csv")
+pd_resources = pd.read_csv( "large_harvest/large_harvest_5_com_15.csv", sep = ';' )
+
+resources_list_full = Resources(pd_resources)
 resources_list_full.selected_fields = []
 resources_list_full.selected_fields.append(1)
 resources_list_full.selected_fields.append(2)
@@ -39,7 +42,7 @@ cand_step2_pop = np.array(pop_step2_full)
 class TestFiles(unittest.TestCase):
 
     def test_resources_list__init__ok(self):
-        result = Resources("large_harvest/large_harvest_5_com_15.csv")
+        result = Resources(pd_resources)
         self.assertNotEqual(result, "ok")
 #----------------------------------------------------------
     def test_resources_list__init__blank(self):
