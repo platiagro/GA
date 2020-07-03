@@ -728,7 +728,7 @@ if __name__ == '__main__':
     print("\nStep 1: elapsed time: {hours:0>2}:{minutes:0>2}:{seconds:05.3f}".format(hours=int(hours), minutes=int(minutes), seconds=seconds))
     
     search_harvesters( resources, weight_tolerance )
-    
+
     exec_end = time.time()
     diff = exec_end - exec_init	
     hours, r = divmod(diff, 3600)
