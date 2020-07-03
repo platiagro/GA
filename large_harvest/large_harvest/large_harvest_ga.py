@@ -151,6 +151,31 @@ class Resources:
             print("\n")
 
 
+    def get_selected_harvesters( self ):
+        response = {}
+        for field_number in self.selected_fields:
+            field_name = self.field_id[field_number]
+            field_line = []     
+            if field_number in self.selected_fields_x_harvesters:
+                for h_index in range(0, len( self.selected_fields_x_harvesters ) ):
+                    if field_number == self.selected_fields_x_harvesters[h_index]:
+                        field_line.append(self.harvester_id[h_index] )
+            else:
+                field_line.append("None")
+
+            response[field_name] = field_line
+        #Reshape response
+        index_max = 0
+        for field_line in response.values():
+            if len(field_line) > index_max:
+                index_max = len(field_line)
+        for field_line in response.values():
+            for pos in range( len(field_line), index_max):
+                field_line.append("")
+
+        pd_resources = pd.DataFrame( data = response )
+        print(pd_resources)
+
 
     def __init__( self, pd_resources ):
         if pd_resources is None:
