@@ -191,7 +191,7 @@ class Resources:
         try:
             for index in pd_resources.itertuples():
                 #     0                 1                    2              3                4
-                #  Resource; Grinding_harvest_limit; Field_harvest_capacity; Field_hour_capacity; Harvester_hour_capacity
+                #  Resource, Grinding_harvest_limit, Field_harvest_capacity, Field_hour_capacity, Harvester_hour_capacity
                 if index[1][0:4].lower() == "mill":
                     self.grinding_harvest_limit += int(index[2])
 
@@ -695,7 +695,7 @@ if __name__ == '__main__':
         exit()
 
     try:
-        pd_resources = pd.read_csv( resources_file_name, sep = ';' )
+        pd_resources = pd.read_csv( resources_file_name )
         resources = Resources(pd_resources)
     except:
         print("\nParameters load failure\n")
