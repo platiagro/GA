@@ -5,14 +5,16 @@
 import csv,sys
 from random import uniform, randint
 import numpy as np
+import pandas as pd
 import time
 
 
 class Candidate:
     np_dna = np.array([])
     hour = 0    #Restriction
-    milk = 0   #Restriction
+    milk = 0    #Restriction
     profit = 0  #Benefit
+    fitness = 0 
 
     def get_hour( self ): 
         return self.hour
@@ -23,55 +25,89 @@ class Candidate:
     def get_profit( self ): 
         return self.profit
 
-    def fitness_evaluation( self, prod_list ):
+    def get_fitness( self ):
+        return self.fitness
+
+    def fitness_evaluation( self, milk_limit, hour_limit, prod_list ):
+        if milk_limit <= 0:
+            raise ValueError
+        if hour_limit <= 0:
+            raise ValueError
         if prod_list is None:
             raise ValueError
 
         self.hour = np.sum( self.np_dna * prod_list.np_hours_list )
         self.milk = np.sum( self.np_dna * prod_list.np_milk_list )
         self.profit = np.sum( self.np_dna * prod_list.np_profit_list )
+        milk_step = milk_limit - self.milk
+        if milk_step < 0:
+            milk_step = -10 * milk_step
+        
+        hour_step = hour_limit - self.hour
+        if hour_step < 0:
+            hour_step = -10 * hour_step
 
-    def __init__( self, prod_list ):
+        self.fitness = self.profit - milk_step - hour_step
+    
+
+    def __init__( self, milk_limit, hour_limit, prod_list ):
+        if milk_limit <= 0:
+            raise ValueError
+        if hour_limit <= 0:
+            raise ValueError
         if prod_list is None:
             raise ValueError
 
         dna = []
         tot = len( prod_list.np_hours_list )
-        lots_limit = 20  #Mais comum seria usar 1
+        lots_limit = 1  #Mais comum seria usar 1
 
         for pos in range( 0, tot ):
             dna.append( randint( 0, lots_limit ) )
 
         np_dna_new = np.array( dna )
         self.np_dna = np_dna_new
-        self.fitness_evaluation( prod_list )
+        self.fitness_evaluation( milk_limit, hour_limit, prod_list )
 
     
 
 class ProductsList:
-    np_hours_list = np.array( [] ) #Restriction
-    np_milk_list = np.array( [] ) #Restriction
+    np_products_list = np.array( [] ) #Produtcs
+    np_milk_list = np.array( [] )   #Restriction
+    np_hours_list = np.array( [] )  #Restriction
     np_profit_list = np.array( [] ) #Benefit
 
-    def __init__( self, qtd_obj ):
-        if qtd_obj is None:
+    def __init__( self, pd_resources ):
+        if pd_resources is None:
             raise ValueError
 
-        hours_list = []
+        products_List = []
         milk_list = []
+        hours_list = []
         profit_list = []
 
-        for pos in range( 0, qtd_obj ):
-            hours_list.append( randint(1, 20) )
-            milk_list.append( randint(10, 100) )
-            profit_list.append( randint(10, 500) )
-        
-        self.np_hours_list = np.array( hours_list )
-        self.np_milk_list = np.array( milk_list )
-        self.np_profit_list = np.array( profit_list )    
+        try:
+            for index in pd_resources.itertuples():
+                if index[1][0:1].lower() != "#":
+                    #     0      1     2      3
+                    #  Product, milk, hour, profit
+                    products_List.append(index[1])
+                    milk_list.append(int(index[2]))
+                    hours_list.append(int(index[3]))
+                    profit_list.append(int(index[4]))
 
+            self.np_products_list = np.array(products_List)
+            self.np_milk_list = np.array(milk_list)
+            self.np_hours_list = np.array(hours_list)
+            self.np_profit_list = np.array(profit_list)
 
-def stop_search( hour_limit, hour_tolerance, milk_limit, milk_tolerance, population, best_fit_array, medium_fit_array, generation, prod_list ):
+        except Exception as inst:
+            print(inst)
+            print("File load failure!")
+            raise ValueError
+          
+
+def stop_search( hour_limit, hour_tolerance, milk_limit, milk_tolerance, population, best_fit_array, medium_fit_array, generation, resources ):
     if hour_limit <= 0:
         raise ValueError
     if hour_tolerance <= 0:
@@ -88,149 +124,116 @@ def stop_search( hour_limit, hour_tolerance, milk_limit, milk_tolerance, populat
         raise ValueError
     if generation <= 0:
         raise ValueError
-    if prod_list is None:
+    if resources is None:
         raise ValueError
+
+    if generation == 0:
+        return False
 
     ret = False
 
-    best_profit = 0
+    best_fitness = 0
     best_hour = 0
     best_milk = 0
 
-    medium_profit = 0
+    medium_fitness = 0
     medium_hour = 0
     medium_milk = 0
 
-    profit_amount = 0
+    fitness_amount = 0
     hour_amount = 0
     milk_amount = 0
 
     #Calcula fitness medio da populacao e guarda o fitness do melhor candidato
-    for cand in population:
-        profit_amount += cand.profit
+    pop_sorted_by_fitness = sorted( population, key = Candidate.get_fitness, reverse = True)
+    best_candidate = pop_sorted_by_fitness[0]
+    best_fitness = best_candidate.fitness
+    best_hour = best_candidate.hour
+    best_milk = best_candidate.milk
+
+    for cand in pop_sorted_by_fitness:
+        fitness_amount += cand.fitness
         hour_amount += cand.hour
         milk_amount += cand.milk
                 
         #Precisa pular a primeira geracao porque ainda nao foi filtrada
         if generation > 1:
-            if cand.profit > best_profit:
+
+            if cand.fitness >= best_fitness:
                 best_candidate = cand
                 
-                best_profit = cand.profit
+                best_fitness = cand.fitness
                 best_hour = cand.hour
                 best_milk = cand.milk
                             
-                if (best_hour <= hour_limit and hour_limit - best_hour <= hour_tolerance and
-                   best_milk <= milk_limit and milk_limit - best_milk <= milk_tolerance):
+                if( best_hour <= hour_limit and (hour_limit - best_hour) <= hour_tolerance and
+                    best_milk <= milk_limit and (milk_limit - best_milk) <= milk_tolerance ):
                     ret = True
                     #Mostra dados do melhor candidato
-                    print( "hour: {0} , milk: {1} , profit: {2} , DNA: {3}".format(best_candidate.hour, best_candidate.milk, best_candidate.profit, best_candidate.np_dna ))
+                    print("")
+                    print( "fitness: {0} , hour: {1} , milk: {2} , profit: {3} , DNA: {4}".format(best_candidate.fitness, best_candidate.hour, best_candidate.milk, best_candidate.profit, best_candidate.np_dna ))
                     
-                    print( "Hour  : {0}".format( prod_list.np_hours_list ))
-                    print( "Milk  : {0}".format( prod_list.np_milk_list ))
-                    print( "Profit: {0}".format( prod_list.np_profit_list ))
+                    print( "Hour  : {0}".format( resources.np_hours_list ))
+                    print( "Milk  : {0}".format( resources.np_milk_list ))
+                    print( "Profit: {0}".format( resources.np_profit_list ))
+                    return True
 
-    if generation > 30 and best_profit == 0: #Nao houve melhoria nesta geracao entao repete o melhor colocado        
-        best_profit = best_fit_array[generation - 1]
+    if generation > 30 and best_fitness == 0: #Nao houve melhoria nesta geracao entao repete o melhor colocado        
+        best_fitness = best_fit_array[generation - 2]
 
     medium_hour = hour_amount / len( population )
     medium_milk = milk_amount / len( population )
-    medium_profit = profit_amount / len( population )
+    medium_fitness = fitness_amount / len( population )
 
     #Registra resultados    
-    best_fit_array.append( best_profit )
-    medium_fit_array.append( medium_profit )
+    best_fit_array.append( best_fitness )
+    medium_fit_array.append( medium_fitness )
 
     #Verifica se houve alguma alteracao nas 5 ultimas geracoes
     if generation > 30:
-        if(best_candidate.hour <= hour_limit and best_candidate.milk <= milk_limit and
-           best_fit_array[generation - 1] == best_fit_array[generation - 2] and
-           best_fit_array[generation - 2] == best_fit_array[generation - 3] and
-           best_fit_array[generation - 3] == best_fit_array[generation - 4] ):
-           ret = True
-           #Mostra dados do melhor candidato
-           print( "hour: {0} , milk: {1} , profit: {2} , DNA: {3}".format(best_candidate.hour, best_candidate.milk, best_candidate.profit, best_candidate.np_dna ))
+        if best_candidate.hour <= hour_limit and best_candidate.milk <= milk_limit:
+            if best_fit_array[generation - 2] == best_fit_array[generation - 3]:
+                if best_fit_array[generation - 3] == best_fit_array[generation - 4]:
+                    if best_fit_array[generation - 4] == best_fit_array[generation - 5]:
+                        ret = True
+                        #Mostra dados do melhor candidato
+                        print("")
+                        print( "fitness: {0} , hour: {1} , milk: {2} , profit: {3} , DNA: {4}".format(best_candidate.fitness, best_candidate.hour, best_candidate.milk, best_candidate.profit, best_candidate.np_dna ))
            
-           print( "Hour  : {0}".format( prod_list.np_hours_list ))
-           print( "Milk  : {0}".format( prod_list.np_milk_list ))
-           print( "Profit: {0}".format( prod_list.np_profit_list ))
+                        print( "Hour  : {0}".format( resources.np_hours_list ))
+                        print( "Milk  : {0}".format( resources.np_milk_list ))
+                        print( "Profit: {0}".format( resources.np_profit_list ))
 
     #Mostra resultados
-    print("Generation: {0} - Fitness [hour / milk] best: {1} [{2} / {3}] - Fitness [hour / milk] medium: {4} [{5} / {6}]".format(generation, best_profit, best_hour, best_milk, medium_profit, medium_hour, medium_milk))
+    print("Generation: {0} - Fitness [hour / milk] best: {1} [{2} / {3}] - Fitness [hour / milk] medium: {4} [{5} / {6}]".format(generation, best_fitness, best_hour, best_milk, medium_fitness, medium_hour, medium_milk))
     
     return ret
 
 
 
-def load_csv_file( input_file_name ):    
-    if input_file_name == "":
-        raise ValueError
 
-    prod_array = []
-    np_prod_array = np.array(prod_array)
-    try:
-        input_file = csv.reader(open(input_file_name), delimiter=';')
-        for [Product, milk, hour, profit] in input_file:
-            prod_array = [Product, milk, hour, profit]
-            np_prod_array = np.append(np_prod_array, prod_array)
-    except:
-        print("File load failure [{0}]".format(input_file_name))
-    return np_prod_array
-
-
-
-def search( hour_tolerance, milk_tolerance, prod_file_name ):
+def search( hour_tolerance, hour_limit, milk_tolerance, milk_limit, resources ):
     if hour_tolerance <= 0:
+        raise ValueError
+    if hour_limit <= 0:
         raise ValueError
     if milk_tolerance <= 0:
         raise ValueError
-    if prod_file_name is None:
+    if milk_limit <= 0:
+        raise ValueError
+    if resources is None:
         raise ValueError
 
     ini_pop_qt = 200  #Usar 1000
     intermed_pop_qt = 2000 #usar 10000
-    #mutation_rate = 0.8  #Testando com 80%
-    crossover_rate = 0.2 #Testando com 20%
+    #mutation_rate = 0.2  #Testando com 80%
+    crossover_rate = 0.8 #Testando com 20%
 
-    exec_init = time.time()  
-
-    print("\n###################################################################")
-    print("#                                                                 #")
-    print("#                      Dairy cooperative problem                  #")
-    print("#                                                                 #")
-    print("###################################################################")
-
-    np_prod_array = np.array([])
-    #prod_file_name = "cooperativa_leite/cooperativa_leite/cooperativa_100.csv"
-    if prod_file_name == "":
-        print("\nFile not found. Using random products generation\n")
-    else:
-        try:
-            np_prod_array = load_csv_file(prod_file_name)
-        except:
-            exit()
-    
-    try:
-        hour_limit = int(float(input("\nWeek hour limit: ")))
-        if hour_limit <= 0:
-            print("\nWeek hour limit must be higher than zero!\n")
-            exit()
-    except:
-        raise ValueError
-
-    try:
-        milk_limit = int(float(input("\nWeek milk limit: ")))
-        if milk_limit <= 0:
-            print("\nWeek milk limit must be higher than zero!\n")
-            exit()    
-    except:
-        raise ValueError
-
-    if len(np_prod_array) < 2:
+    if len(resources.np_products_list) < 2:
         print("\nProducts not found. Using random option")
         available_products_qt = int(float(input("\nProducts amunt to create (limit: 1010): ")))
     else:
-        available_products_qt = len(np_prod_array) - 1
+        available_products_qt = len(resources.np_products_list) - 1
 
     if available_products_qt <= 0:
         print("\nProduct amount limit should be higher than zero!\n")
@@ -239,7 +242,7 @@ def search( hour_tolerance, milk_tolerance, prod_file_name ):
     if available_products_qt > 1010:
         print("Amounts higher than 1010 are forbiden!")
         exit()
-        
+
     if available_products_qt <= 15:
         print("There are " + str(2 ** available_products_qt) + " possible solutions for this products amount")
     else:
@@ -253,8 +256,7 @@ def search( hour_tolerance, milk_tolerance, prod_file_name ):
             print("Therefore, we'll search for just a good solution, not for the best one.")
             print("The good solution will be the candidate with the best profit within the limit of available hours and milk in a week \n")
 
-    prod_list = ProductsList( available_products_qt )
-    populat = create_initial_population( ini_pop_qt, prod_list )
+    populat = create_initial_population( ini_pop_qt, milk_limit, hour_limit, resources )
     population = sorted( populat, key = Candidate.get_profit, reverse = True )
 
     #print("Show the initical population: ")
@@ -267,8 +269,8 @@ def search( hour_tolerance, milk_tolerance, prod_file_name ):
     medium_fit_array = []
 
     #Repete este ciclo ate condicao de parada
-    while not stop_search( hour_limit, hour_tolerance, milk_limit, milk_tolerance, population, best_fit_array, medium_fit_array, generation, prod_list ):
-        #Cria nova população intermediaria com mutacao e crossover
+    while not stop_search( hour_limit, hour_tolerance, milk_limit, milk_tolerance, population, best_fit_array, medium_fit_array, generation, resources ):
+        #Cria nova populacao intermediaria com mutacao e crossover
         #Para manter a diversidade genetica a semente para a proxima geracao sera formada por 40% dos melhores candidatos atuais e 10% dos piores
         
         #==>Seleciona os pais para reproducao
@@ -283,17 +285,17 @@ def search( hour_tolerance, milk_tolerance, prod_file_name ):
         if (crossover_qt % 2) != 0:
             crossover_qt = crossover_qt + 1
 
-        intermed_pop_crossover = apply_crossover(crossover_qt, cand_for_reproduction, prod_list)
+        intermed_pop_crossover = apply_crossover(crossover_qt, cand_for_reproduction, milk_limit, hour_limit, resources)
     
-        #==>Reproducao por MUTAÇÃO
+        #==>Reproducao por MUTACAO
         mutation_qt = intermed_pop_qt - len(cand_for_reproduction) - crossover_qt
         
         #==>Selecao da proxima geracao de candidatos
-        intermed_pop_mutation = apply_mutation(mutation_qt, cand_for_reproduction, prod_list)
+        intermed_pop_mutation = apply_mutation(mutation_qt, cand_for_reproduction, milk_limit, hour_limit, resources)
     
         intermed_pop = np.append(cand_for_reproduction, intermed_pop_crossover)
         intermed_pop = np.append(intermed_pop, intermed_pop_mutation)
-        print("Size of intermed pop: {0}".format(len(intermed_pop)))
+        #print("Size of intermed pop: {0}".format(len(intermed_pop)))
 
         population = apply_selection(ini_pop_qt, hour_limit, milk_limit, intermed_pop)
 
@@ -301,13 +303,7 @@ def search( hour_tolerance, milk_tolerance, prod_file_name ):
         generation = generation + 1
         xItera.append(generation)
 
-    #Mostra tempo de execucao
-    exec_end = time.time()
-    diff = exec_end - exec_init	
-    hours, r = divmod(diff, 3600)
-    minutes, seconds = divmod(r, 60)
-    print("Elapsed time: {hours:0>2}:{minutes:0>2}:{seconds:05.3f}".format(hours=int(hours), minutes=int(minutes), seconds=seconds))
-
+   
 
 
 def apply_selection(pop_qt, hour_limit, milk_limit, pop_inter):
@@ -323,24 +319,8 @@ def apply_selection(pop_qt, hour_limit, milk_limit, pop_inter):
     #Fase 1: elimina candidatos acima do limite de hora ate limite da quantidade desejada para a populacao
     #Ordena populacao intermediaria em ordem decrescente usando o limite de hora
     #Remove todos acima do limite de hora ou ate que sobre somente qtd_pop
-    
-    #Fase 2: elimina candidatos acima do limite de leite ate limite da quantidade desejada para a populacao
-    #Ordena populacao intermediaria em ordem decrescente usando o limite de leite
-    #Remove todos acima do limite de leite ou ate que sobre somente qtd_pop
-
-    #Fase 3: elimina candidatos com menor margem ate o limite da quantidade desejada para a populacao
-    #Ordena populacao intermediaria em ordem decrescente usando o margem
-    #Enquanto tamanho da populacao nao baixar para o tamanho desejado
-
-    #Fase 1
     pop_sorted_by_hour = sorted( pop_inter, key = Candidate.get_hour, reverse = True)
     dismissed = True
-    cand = pop_sorted_by_hour[0]
-    if cand.hour > hour_limit: 
-        dismissed = True
-    else:
-        dismissed = False
-
     while len(pop_sorted_by_hour) > pop_qt and dismissed == True:
         pop_sorted_by_hour = np.delete(pop_sorted_by_hour, 0)
         cand = pop_sorted_by_hour[0]
@@ -349,15 +329,11 @@ def apply_selection(pop_qt, hour_limit, milk_limit, pop_inter):
         else:
             dismissed = False
 
-    #Fase 2
-    pop_sorted_by_milk = sorted( pop_inter, key = Candidate.get_milk, reverse = True)
+    #Fase 2: elimina candidatos acima do limite de leite ate limite da quantidade desejada para a populacao
+    #Ordena populacao intermediaria em ordem decrescente usando o limite de leite
+    #Remove todos acima do limite de leite ou ate que sobre somente qtd_pop
+    pop_sorted_by_milk = sorted( pop_sorted_by_hour, key = Candidate.get_milk, reverse = True)
     dismissed = True
-    cand = pop_sorted_by_milk[0]
-    if cand.milk > milk_limit:
-        dismissed = True
-    else:
-        dismissed = False
-
     while len(pop_sorted_by_milk) > pop_qt and dismissed == True:
         pop_sorted_by_milk = np.delete(pop_sorted_by_milk, 0)
         cand = pop_sorted_by_milk[0]
@@ -366,19 +342,22 @@ def apply_selection(pop_qt, hour_limit, milk_limit, pop_inter):
         else:
             dismissed = False
 
-    #Fase 3
-    pop_sorted_by_profit = sorted( pop_sorted_by_hour, key = Candidate.get_profit, reverse = True)
- 
-    pop_ordenada_mapop_sorted_by_profitrgem = pop_sorted_by_profit[0:pop_qt]
+    #Fase 3: elimina candidatos ate o limite da quantidade desejada para a populacao
+    pop_sorted_by_fitness = sorted( pop_sorted_by_milk, key = Candidate.get_fitness, reverse = True)
+    pop_sorted_by_fitness_sharp = pop_sorted_by_fitness[0:pop_qt]
     
-    return pop_sorted_by_profit
+    return pop_sorted_by_fitness_sharp
 
 
 
-def apply_crossover(crossover_qt, cand_to_repro, prod_list):
+def apply_crossover(crossover_qt, cand_to_repro, milk_limit, hour_limit, prod_list):
     if crossover_qt <= 0:
         raise ValueError
     if cand_to_repro is None:
+        raise ValueError
+    if milk_limit <= 0:
+        raise ValueError
+    if hour_limit <= 0:
         raise ValueError
     if prod_list is None:
         raise ValueError
@@ -390,10 +369,10 @@ def apply_crossover(crossover_qt, cand_to_repro, prod_list):
         #Seleciona 2 pais da lista de candidatos a reproducao, p1 e p2
         #Seleciona ponto de crossover
         #Cria dois novos candidatos, f1 e f2
-        #Copia DNA de p1 até o ponto de crossover para o inicio de f1
-        #Copia DNA de p1 após o ponto de crossover para o fim de f2
-        #Copia DNA de p2 até o ponto de crossover para o inicio de f2
-        #Copia DNA de p2 após o ponto de crossover para o fim de f1
+        #Copia DNA de p1 ate o ponto de crossover para o inicio de f1
+        #Copia DNA de p1 apos o ponto de crossover para o fim de f2
+        #Copia DNA de p2 ate o ponto de crossover para o inicio de f2
+        #Copia DNA de p2 apos o ponto de crossover para o fim de f1
         #Acrescenta novos filhos na lista parcial de candidatos
     #Devolve a lista parcial criada
     
@@ -419,8 +398,8 @@ def apply_crossover(crossover_qt, cand_to_repro, prod_list):
         choice_limit = dna_length - 2  #Todos os DNAs tem o mesmo tamanho e quero excluir os extremos
         pto_cross = randint(1, choice_limit) 
         
-        f1 = Candidate(prod_list) #DNA ja foi criado mas sera alterado por crossover
-        f2 = Candidate(prod_list) #DNA tambem sera alterado
+        f1 = Candidate(milk_limit, hour_limit, prod_list) #DNA ja foi criado mas sera alterado por crossover
+        f2 = Candidate(milk_limit, hour_limit, prod_list) #DNA tambem sera alterado
         
         #Copia parte de p1 para f1 e parte de f2 para p2
         for pos in range(0, pto_cross): #Adorei esse foreach() esquisitao
@@ -433,8 +412,8 @@ def apply_crossover(crossover_qt, cand_to_repro, prod_list):
             f2.np_dna[pos] = p1.np_dna[pos]
         
         #Ajusta fitness dos novos candidatos
-        f1.fitness_evaluation(prod_list)
-        f2.fitness_evaluation(prod_list)    
+        f1.fitness_evaluation( milk_limit, hour_limit, prod_list )
+        f2.fitness_evaluation( milk_limit, hour_limit, prod_list )    
         
         #Acrescenta novos candidatos na lista parcial  
         np_new_pop_crossover = np.append(np_new_pop_crossover, f1)
@@ -448,10 +427,14 @@ def apply_crossover(crossover_qt, cand_to_repro, prod_list):
     return np_new_pop_crossover
 
 
-def apply_mutation(wished_qt, cand_to_repro, prod_list):
+def apply_mutation(wished_qt, cand_to_repro, milk_limit, hour_limit, prod_list):
     if wished_qt <= 0:
         raise ValueError
     if cand_to_repro is None:
+        raise ValueError
+    if milk_limit <= 0:
+        raise ValueError
+    if hour_limit <= 0:
         raise ValueError
     if prod_list is None:
         raise ValueError
@@ -465,7 +448,7 @@ def apply_mutation(wished_qt, cand_to_repro, prod_list):
 
     for pos in range( 0, wished_qt ):
         #Seleciona aleatoriamente um membro do grupo de candidatos a reproducao
-        new_cand = Candidate( prod_list )  #Este novo candidato vai receber o DNA alterado por mutacao
+        new_cand = Candidate( milk_limit, hour_limit, prod_list )  #Este novo candidato vai receber o DNA alterado por mutacao
         choice_limit = len( cand_to_repro ) - 1
         cand_position = randint( 0, choice_limit )
         cand = cand_to_repro[cand_position]
@@ -479,7 +462,7 @@ def apply_mutation(wished_qt, cand_to_repro, prod_list):
         else:
             new_cand.np_dna[mutation_target] = 0
         
-        new_cand.fitness_evaluation( prod_list )
+        new_cand.fitness_evaluation( milk_limit, hour_limit, prod_list )
 
 #        #Mostra DNA do pai
 #        print("[Father]hour: {0} profit: {1} DNA: {2}".format(cand.hour, cand.profit, cand.np_dna))
@@ -493,15 +476,19 @@ def apply_mutation(wished_qt, cand_to_repro, prod_list):
     
 
 
-def create_initial_population( init_pop_qt, prod_list ):
+def create_initial_population( init_pop_qt, milk_limit, hour_limit, prod_list ):
     if init_pop_qt <= 0:
+        raise ValueError
+    if milk_limit <= 0:
+        raise ValueError
+    if hour_limit <= 0:
         raise ValueError
     if prod_list is None:
         raise ValueError
     
     pop = []
     for pos in range( 0, init_pop_qt ):
-        cand = Candidate( prod_list )
+        cand = Candidate( milk_limit, hour_limit, prod_list )
         pop.append( cand )
     return pop
     
@@ -509,13 +496,53 @@ def create_initial_population( init_pop_qt, prod_list ):
 
 
 if __name__ == '__main__':
-    hour_tolerance = 1
-    milk_tolerance = 10
+    hour_tolerance = 2
+    milk_tolerance = 50
+    resources_file_name = ""
 
-    if len(sys.argv) > 1:
-        prod_file_name = sys.argv[1]
-    else:
-        prod_file_name = ""
+    print("\n###################################################################")
+    print("#                                                                 #")
+    print("#                      Dairy cooperative problem                  #")
+    print("#                                                                 #")
+    print("###################################################################")
 
-    search( hour_tolerance = 1, milk_tolerance = 10, prod_file_name = "" )
+
+    resources_file_name = input("\nDairy parameters file name: ")
+    if resources_file_name == "":
+        print("\nParameters file missing\n")
+        exit()
+
+    try:
+        pd_resources = pd.read_csv( resources_file_name )
+        resources = ProductsList( pd_resources )
+    except:
+        print("\nParameters load failure\n")
+        exit()
+
+    try:
+        hour_limit = int(float(input("\nWeek hour limit: ")))
+        if hour_limit <= 0:
+            print("\nWeek hour limit must be higher than zero!\n")
+            exit()
+    except:
+        raise ValueError
+
+    try:
+        milk_limit = int(float(input("\nWeek milk limit: ")))
+        if milk_limit <= 0:
+            print("\nWeek milk limit must be higher than zero!\n")
+            exit()    
+    except:
+        raise ValueError
+
+
+    exec_init = time.time()  
+
+    search( hour_tolerance, hour_limit, milk_tolerance, milk_limit, resources )
+    
+    exec_end = time.time()
+    diff = exec_end - exec_init	
+    hours, r = divmod(diff, 3600)
+    minutes, seconds = divmod(r, 60)
+    print("\nElapsed time: {hours:0>2}:{minutes:0>2}:{seconds:05.3f}".format(hours=int(hours), minutes=int(minutes), seconds=seconds))
     

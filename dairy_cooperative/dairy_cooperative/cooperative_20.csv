@@ -1,21 +1,21 @@
-Produtos;Leite (L);Tempo (H);Margem (R$)
-Leite tipo C;4800;20;576
-Queijo muçarela;300;9;84
-Queijo fresco;100;8;60
-Queijo cremoso;12;5;14
-Iogurte;30;4;22,5
-Leite tipo A;2000;10;300
-Leite tipo B;3000;15;400
-Requeijão;50;12;30
-Manteiga;25;7;17
-Ricota;8;6;15
-Produto_11;10;12;40
-Produto_12;20;1;11
-Produto_13;24;3;28
-Produto_14;5;7;37
-Produto_15;21;10;34
-Produto_16;14;4;36
-Produto_17;6;12;9
-Produto_18;8;1;32
-Produto_19;20;6;36
-Produto_20;5;6;32
+#Produtos,Leite (L),Tempo (H),Margem (R$)
+Leite tipo C,4800,20,576
+Queijo muçarela,300,9,84
+Queijo fresco,100,8,60
+Queijo cremoso,12,5,14
+Iogurte,30,4,22
+Leite tipo A,2000,10,300
+Leite tipo B,3000,15,400
+Requeijão,50,12,30
+Manteiga,25,7,17
+Ricota,8,6,15
+Produto_11,10,12,40
+Produto_12,20,1,11
+Produto_13,24,3,28
+Produto_14,5,7,37
+Produto_15,21,10,34
+Produto_16,14,4,36
+Produto_17,6,12,9
+Produto_18,8,1,32
+Produto_19,20,6,36
+Produto_20,5,6,32

@@ -1,31 +1,31 @@
-Produtos;Leite (L);Tempo (H);Margem (R$)
-Leite tipo C;4800;20;576
-Queijo muçarela;300;9;84
-Queijo fresco;100;8;60
-Queijo cremoso;12;5;14
-Iogurte;30;4;22,5
-Leite tipo A;2000;10;300
-Leite tipo B;3000;15;400
-Requeijão;50;12;30
-Manteiga;25;7;17
-Ricota;8;6;15
-Produto_11;18;7;1
-Produto_12;10;6;39
-Produto_13;17;13;2
-Produto_14;7;9;36
-Produto_15;23;2;45
-Produto_16;11;10;39
-Produto_17;16;12;39
-Produto_18;24;5;38
-Produto_19;14;12;42
-Produto_20;14;3;1
-Produto_21;19;2;1
-Produto_22;10;4;20
-Produto_23;11;4;43
-Produto_24;18;4;40
-Produto_25;8;3;20
-Produto_26;23;14;32
-Produto_27;11;5;24
-Produto_28;21;7;44
-Produto_29;19;9;23
-Produto_30;18;12;10
+#Produtos,Leite (L),Tempo (H),Margem (R$)
+Leite tipo C,4800,20,576
+Queijo muçarela,300,9,84
+Queijo fresco,100,8,60
+Queijo cremoso,12,5,14
+Iogurte,30,4,22
+Leite tipo A,2000,10,300
+Leite tipo B,3000,15,400
+Requeijão,50,12,30
+Manteiga,25,7,17
+Ricota,8,6,15
+Produto_11,18,7,1
+Produto_12,10,6,39
+Produto_13,17,13,2
+Produto_14,7,9,36
+Produto_15,23,2,45
+Produto_16,11,10,39
+Produto_17,16,12,39
+Produto_18,24,5,38
+Produto_19,14,12,42
+Produto_20,14,3,1
+Produto_21,19,2,1
+Produto_22,10,4,20
+Produto_23,11,4,43
+Produto_24,18,4,40
+Produto_25,8,3,20
+Produto_26,23,14,32
+Produto_27,11,5,24
+Produto_28,21,7,44
+Produto_29,19,9,23
+Produto_30,18,12,10

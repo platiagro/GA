@@ -147,13 +147,13 @@ def stop_search( hour_limit, hour_tolerance, milk_limit, milk_tolerance, populat
            best_fit_array[generation - 1] == best_fit_array[generation - 2] and
            best_fit_array[generation - 2] == best_fit_array[generation - 3] and
            best_fit_array[generation - 3] == best_fit_array[generation - 4] ):
-           ret = True
-           #Mostra dados do melhor candidato
-           print( "hour: {0} , milk: {1} , profit: {2} , DNA: {3}".format(best_candidate.hour, best_candidate.milk, best_candidate.profit, best_candidate.np_dna ))
+            ret = True
+            #Mostra dados do melhor candidato
+            print( "hour: {0} , milk: {1} , profit: {2} , DNA: {3}".format(best_candidate.hour, best_candidate.milk, best_candidate.profit, best_candidate.np_dna ))
            
-           print( "Hour  : {0}".format( prod_list.np_hours_list ))
-           print( "Milk  : {0}".format( prod_list.np_milk_list ))
-           print( "Profit: {0}".format( prod_list.np_profit_list ))
+            print( "Hour  : {0}".format( prod_list.np_hours_list ))
+            print( "Milk  : {0}".format( prod_list.np_milk_list ))
+            print( "Profit: {0}".format( prod_list.np_profit_list ))
 
     #Mostra resultados
     print("Generation: {0} - Fitness [hour / milk] best: {1} [{2} / {3}] - Fitness [hour / milk] medium: {4} [{5} / {6}]".format(generation, best_profit, best_hour, best_milk, medium_profit, medium_hour, medium_milk))
@@ -239,7 +239,7 @@ def search( hour_tolerance, milk_tolerance ):
 
     #Repete este ciclo ate condicao de parada
     while not stop_search( hour_limit, hour_tolerance, milk_limit, milk_tolerance, population, best_fit_array, medium_fit_array, generation, prod_list ):
-        #Cria nova população intermediaria com mutacao e crossover
+        #Cria nova populacao intermediaria com mutacao e crossover
         #Para manter a diversidade genetica a semente para a proxima geracao sera formada por 40% dos melhores candidatos atuais e 10% dos piores
         
         #==>Seleciona os pais para reproducao
@@ -256,7 +256,7 @@ def search( hour_tolerance, milk_tolerance ):
 
         intermed_pop_crossover = apply_crossover(crossover_qt, cand_for_reproduction, prod_list)
     
-        #==>Reproducao por MUTAÇÃO
+        #==>Reproducao por MUTACAO
         mutation_qt = intermed_pop_qt - len(cand_for_reproduction) - crossover_qt
         
         #==>Selecao da proxima geracao de candidatos
@@ -370,10 +370,10 @@ def apply_crossover(crossover_qt, cand_to_repro, prod_list):
         #Seleciona 2 pais da lista de candidatos a reproducao, p1 e p2
         #Seleciona ponto de crossover
         #Cria dois novos candidatos, f1 e f2
-        #Copia DNA de p1 até o ponto de crossover para o inicio de f1
-        #Copia DNA de p1 após o ponto de crossover para o fim de f2
-        #Copia DNA de p2 até o ponto de crossover para o inicio de f2
-        #Copia DNA de p2 após o ponto de crossover para o fim de f1
+        #Copia DNA de p1 ate o ponto de crossover para o inicio de f1
+        #Copia DNA de p1 apos o ponto de crossover para o fim de f2
+        #Copia DNA de p2 ate o ponto de crossover para o inicio de f2
+        #Copia DNA de p2 apos o ponto de crossover para o fim de f1
         #Acrescenta novos filhos na lista parcial de candidatos
     #Devolve a lista parcial criada
     
