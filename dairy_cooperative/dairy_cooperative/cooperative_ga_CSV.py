@@ -76,6 +76,61 @@ class ProductsList:
     np_milk_list = np.array( [] )   #Restriction
     np_hours_list = np.array( [] )  #Restriction
     np_profit_list = np.array( [] ) #Benefit
+    np_selected_products = np.array( [] )
+
+
+    def set_selected_products( self, candidate ):
+        if candidate is None:
+            raise ValueError
+
+        self.np_selected_products = candidate.np_dna
+
+
+    def get_selected_products( self ):
+        response = {}
+        #| Prod | Qtd | Milk | Hour | Profit |
+        acum_milk = 0
+        acum_hours = 0
+        acum_profit = 0
+
+        column_product_name = "Produto"
+        column_product = []
+        column_qtd_name = "Qtd"
+        column_qtd = []
+        column_milk_name = "Leite"
+        column_milk = []
+        column_hour_name = "Hora"
+        column_hour = []
+        column_profit_name = "Margem"
+        column_profit = []
+        
+        qtd = self.np_selected_products.shape[0]
+        for pos in range( 0, qtd ):
+            if self.np_selected_products[pos] > 0:
+                column_product.append( self.np_products_list[pos] )
+                column_qtd.append( self.np_selected_products[pos] )
+                column_milk.append( self.np_milk_list[pos] )
+                acum_milk += self.np_milk_list[pos]
+                column_hour.append( self.np_hours_list[pos] )
+                acum_hours += self.np_hours_list[pos]
+                column_profit.append( self.np_profit_list[pos] )
+                acum_profit += self.np_profit_list[pos]
+
+        column_product.append( "" )
+        column_qtd.append( "" )
+        column_milk.append( acum_milk )
+        column_hour.append( acum_hours )
+        column_profit.append( acum_profit )
+
+        response[column_product_name] = column_product
+        response[column_qtd_name] = column_qtd
+        response[column_milk_name] = column_milk
+        response[column_hour_name] = column_hour
+        response[column_profit_name] = column_profit
+                         
+        pd_response = pd.DataFrame( data = response )
+        return pd_response
+
 
     def __init__( self, pd_resources ):
         if pd_resources is None:
@@ -169,6 +224,7 @@ def stop_search( hour_limit, hour_tolerance, milk_limit, milk_tolerance, populat
                 if( best_hour <= hour_limit and (hour_limit - best_hour) <= hour_tolerance and
                     best_milk <= milk_limit and (milk_limit - best_milk) <= milk_tolerance ):
                     ret = True
+                    resources.set_selected_products( cand )
                     #Mostra dados do melhor candidato
                     print("")
                     print( "fitness: {0} , hour: {1} , milk: {2} , profit: {3} , DNA: {4}".format(best_candidate.fitness, best_candidate.hour, best_candidate.milk, best_candidate.profit, best_candidate.np_dna ))
@@ -196,6 +252,7 @@ def stop_search( hour_limit, hour_tolerance, milk_limit, milk_tolerance, populat
                 if best_fit_array[generation - 3] == best_fit_array[generation - 4]:
                     if best_fit_array[generation - 4] == best_fit_array[generation - 5]:
                         ret = True
+                        resources.set_selected_products( best_candidate )
                         #Mostra dados do melhor candidato
                         print("")
                         print( "fitness: {0} , hour: {1} , milk: {2} , profit: {3} , DNA: {4}".format(best_candidate.fitness, best_candidate.hour, best_candidate.milk, best_candidate.profit, best_candidate.np_dna ))
@@ -540,6 +597,8 @@ if __name__ == '__main__':
 
     search( hour_tolerance, hour_limit, milk_tolerance, milk_limit, resources )
     
+    print( resources.get_selected_products())
+
     exec_end = time.time()
     diff = exec_end - exec_init	
     hours, r = divmod(diff, 3600)
