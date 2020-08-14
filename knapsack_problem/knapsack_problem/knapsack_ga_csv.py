@@ -466,8 +466,7 @@ if __name__ == '__main__':
 
     try:
         file_name = input("Knapsack problem parameters file name: ")
-        print(file_name)
-        
+
         if file_name is None:
             print("\nParameters file missing\n")
             raise ValueError
@@ -521,7 +520,7 @@ if __name__ == '__main__':
 
     search( weight_limit, weight_tolerance, available_objects_qt, resources )
     
-    print( resources.get_selected_items())
+#    print( resources.get_selected_items())
 
     #Mostra tempo de execucao
     exec_end = time.time()
