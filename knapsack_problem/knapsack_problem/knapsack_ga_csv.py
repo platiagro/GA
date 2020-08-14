@@ -43,8 +43,12 @@ class ObjectsList:
     np_products_list = np.array([])
     np_weight_list = np.array([])
     np_benefit_list = np.array([])
+    qtd_items = 0
 
     np_selected_items = np.array( [] )
+
+    def get_qtd_items(self):
+        return self.qtd_items
 
     def set_selected_items( self, candidate ):
         if candidate is None:
@@ -86,24 +90,33 @@ class ObjectsList:
         pd_response = pd.DataFrame( data = response )
         return pd_response
 
-    def __init__(self, qtd_obj):
-        if qtd_obj is None:
-            raise ValueError
-        if qtd_obj <= 0:
+    def __init__(self, pd_resources):
+        if pd_resources is None:
             raise ValueError
 
         products_list = []
         weight_list = []
         benefit_list = []
 
-        for pos in range(0, qtd_obj):
-            products_list.append( "item_" + str(pos) )
-            weight_list.append(randint(100, 2000))
-            benefit_list.append(randint(1, 10))
-        
-        self.np_weight_list = np.array(weight_list)
-        self.np_benefit_list = np.array(benefit_list)
-        self.np_products_list = np.array(products_list)    
+        try:
+            for index in pd_resources.itertuples():
+                if index[1][0:1].lower() != "#":
+                    #   0     1     2 
+                    #  Item, Peso, Benefit
+                    products_list.append(index[1])
+                    weight_list.append(int(index[2]))
+                    benefit_list.append(int(index[3]))
+                    
+            self.np_products_list = np.array(products_list)
+            self.np_weight_list = np.array(weight_list)
+            self.np_benefit_list = np.array(benefit_list)
+
+            self.qtd_items = self.np_products_list.shape[0]
+            
+        except Exception as inst:
+            print(inst)
+            print("File load failure!")
+            raise ValueError 
 
 
 
@@ -452,50 +465,63 @@ if __name__ == '__main__':
     print("##################################################################")
 
     try:
-        weight_limit = int(float(input("\nKnapsack weight limit (Kg): ")))
+        file_name = input("Knapsack problem parameters file name: ")
+        print(file_name)
+        
+        if file_name is None:
+            print("\nParameters file missing\n")
+            raise ValueError
+    
+        if file_name == "":
+            print("\nParameters file missing\n")
+            raise ValueError
+    except:
+        raise ValueError
+
+    try:
+        pd_resources = pd.read_csv( file_name )
+        resources = ObjectsList( pd_resources )
+        available_objects_qt = resources.get_qtd_items()
+    except:
+        print("\nParameters load failure\n")
+        exit()
+
+    try:
+        weight_limit = int(float(input("Knapsack weight limit (Kg): ")))
         if weight_limit <= 0:
             print("\nKnapsack weight limit must be higher than zero!\n")
             raise ValueError
     except:
         raise ValueError
 
-    try:
-        available_objects_qt = int(float(input("\nAvailable objects (limit: 1010): ")))
-        if available_objects_qt <= 0:
-            print("\nAvailable objects must be higher than zero!\n")
+
+    if available_objects_qt <= 0:
+        print("\nAvailable objects must be higher than zero!\n")
+        raise ValueError
+    else:    
+        if available_objects_qt > 1010:
+            print("Values higher than 1010 are forbiden!")
             raise ValueError
 
-        else:    
-            if available_objects_qt > 1010:
-                print("Values higher than 1010 are forbiden!")
-                raise ValueError
+        elif available_objects_qt <= 15:
+            print("There are " + str(2 ** available_objects_qt) + " possible solutions for this products amount")
+        else:
+            possible_solutions = 2 ** available_objects_qt
+            search_years = possible_solutions / (3600 * 24 * 365 * 1000000)
+            print("There are {0:+5.2E} possible solutions for this products amount".format(possible_solutions))
+            if available_objects_qt > 44:
+                print("\nIf we had a computer capable of processing 1.000.000 candidates each second")
+                print("and considering that one year has (60s * 60m * 24h * 365d) 31.536.000 seconds")
+                print("it would take {0:+5.2e} years to find the best solution.".format(search_years))
+                print("Therefore, we'll search for just a good solution, not for the best one.")
+                print("The good solution will be the candidate with the best benefit within the limit of weight\n")
 
-            elif available_objects_qt <= 15:
-                print("There are " + str(2 ** available_objects_qt) + " possible solutions for this products amount")
-            else:
-                possible_solutions = 2 ** available_objects_qt
-                search_years = possible_solutions / (3600 * 24 * 365 * 1000000)
-                print("There are {0:+5.2E} possible solutions for this products amount".format(possible_solutions))
-                if available_objects_qt > 44:
-                    print("\nIf we had a computer capable of processing 1.000.000 candidates each second")
-                    print("and considering that one year has (60s * 60m * 24h * 365d) 31.536.000 seconds")
-                    print("it would take {0:+5.2e} years to find the best solution.".format(search_years))
-                    print("Therefore, we'll search for just a good solution, not for the best one.")
-                    print("The good solution will be the candidate with the best benefit within the limit of weight\n")
-    except:
-        raise ValueError
-
-    try:
-        pd_resources = ObjectsList( available_objects_qt )
-    except:
-        print("\nParameters load failure\n")
-        exit()
 
     exec_init = time.time()
 
-    search( weight_limit, weight_tolerance, available_objects_qt, pd_resources )
+    search( weight_limit, weight_tolerance, available_objects_qt, resources )
     
-    print( pd_resources.get_selected_items())
+    print( resources.get_selected_items())
 
     #Mostra tempo de execucao
     exec_end = time.time()
