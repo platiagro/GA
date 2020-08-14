@@ -3,6 +3,7 @@
 
 from random import uniform, randint
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 import time
 
@@ -39,26 +40,74 @@ class Candidate:
     
 
 class ObjectsList:
+    np_products_list = np.array([])
     np_weight_list = np.array([])
     np_benefit_list = np.array([])
+
+    np_selected_items = np.array( [] )
+
+    def set_selected_items( self, candidate ):
+        if candidate is None:
+            raise ValueError
+
+        self.np_selected_items = candidate.np_dna
+
+
+    def get_selected_items( self ):
+        response = {}
+        #| Item | Qtd | Peso |
+        acum_qtd = 0
+        acum_weight = 0
+
+        column_item_name = "Item"
+        column_item = []
+        column_qtd_name = "Qtd"
+        column_qtd = []
+        column_weight_name = "Peso"
+        column_weight = []
+        
+        qtd = self.np_selected_items.shape[0]
+        for pos in range( 0, qtd ):
+            if self.np_selected_items[pos] > 0:
+                column_item.append( self.np_products_list[pos] )
+                column_qtd.append( self.np_selected_items[pos] )
+                acum_qtd += self.np_selected_items[pos]
+                column_weight.append( self.np_weight_list[pos] )
+                acum_weight += self.np_weight_list[pos]
+                
+        column_item.append( "Total" )
+        column_qtd.append( acum_qtd )
+        column_weight.append( acum_weight )
+        
+        response[column_item_name] = column_item
+        response[column_qtd_name] = column_qtd
+        response[column_weight_name] = column_weight
+                         
+        pd_response = pd.DataFrame( data = response )
+        return pd_response
 
     def __init__(self, qtd_obj):
         if qtd_obj is None:
             raise ValueError
+        if qtd_obj <= 0:
+            raise ValueError
 
+        products_list = []
         weight_list = []
         benefit_list = []
 
         for pos in range(0, qtd_obj):
+            products_list.append( "item_" + str(pos) )
             weight_list.append(randint(100, 2000))
             benefit_list.append(randint(1, 10))
         
         self.np_weight_list = np.array(weight_list)
-        self.np_benefit_list = np.array(benefit_list)    
+        self.np_benefit_list = np.array(benefit_list)
+        self.np_products_list = np.array(products_list)    
 
 
 
-def stop_search(weight_limit, weight_tolerance, population, best_fit_array, medium_fit_array, generation, obj_list):
+def stop_search( weight_limit, weight_tolerance, population, best_fit_array, medium_fit_array, generation, resources ):
     if weight_limit <= 0:
         raise ValueError
     if weight_tolerance <= 0:
@@ -71,7 +120,9 @@ def stop_search(weight_limit, weight_tolerance, population, best_fit_array, medi
         raise ValueError
     if generation <= 0:
         raise ValueError
-    if obj_list is None:
+    if generation is None:
+        raise ValueError
+    if resources is None:
         raise ValueError
 
     ret = False
@@ -90,9 +141,7 @@ def stop_search(weight_limit, weight_tolerance, population, best_fit_array, medi
         benefit_amount += cand.benefit
         wigth_amount += cand.weight
         #Precisa pular a primeira geracao porque ainda nao foi filtrada
-        if generation < 1:
-            generation_new = 1
-        else:    
+        if generation > 1:
             if cand.benefit > best_benefit:
                 best_candidate = cand
 
@@ -102,11 +151,12 @@ def stop_search(weight_limit, weight_tolerance, population, best_fit_array, medi
                 adjusted_weight_limit = weight_limit * 1000 #Ajustado para gramas
                 if best_weight <= adjusted_weight_limit and adjusted_weight_limit - best_weight < weight_tolerance:
                     ret = True
+                    resources.set_selected_items( cand )
                     #Mostra dados do melhor candidato
                     print("weight: {0}, benefit: {1}, DNA: {2}".format(best_candidate.weight, best_candidate.benefit, best_candidate.np_dna))
     
-                    print( "Weight : {0}".format( obj_list.np_weight_list ))
-                    print( "Benetif: {0}".format( obj_list.np_benefit_list ))
+                    print( "Weight : {0}".format( resources.np_weight_list ))
+                    print( "Benetif: {0}".format( resources.np_benefit_list ))
 
     if generation > 30 and best_benefit == 0: #Nao houve melhoria nesta geracao entao repete o melhor colocado        
         best_benefit = best_fit_array[generation - 1]
@@ -126,11 +176,12 @@ def stop_search(weight_limit, weight_tolerance, population, best_fit_array, medi
            best_fit_array[generation - 2] == best_fit_array[generation - 3] and
            best_fit_array[generation - 3] == best_fit_array[generation - 4] ):
            ret = True
+           resources.set_selected_items( best_candidate )
            #Mostra dados do melhor candidato
            print("weight: {0}, benefit: {1}, DNA: {2}".format(best_candidate.weight, best_candidate.benefit, best_candidate.np_dna))
     
-           print( "Weight : {0}".format( obj_list.np_weight_list ))
-           print( "Benetif: {0}".format( obj_list.np_benefit_list ))
+           print( "Weight : {0}".format( resources.np_weight_list ))
+           print( "Benetif: {0}".format( resources.np_benefit_list ))
 
     #Mostra resultados
     print("Generation: {0} - best benefit / weight: {1} / {2} - medium benefit / weight: {3} / {4}".format(generation, best_benefit, best_weight, medium_benefit, medium_weight))
@@ -139,8 +190,14 @@ def stop_search(weight_limit, weight_tolerance, population, best_fit_array, medi
 
 
 
-def search(weight_tolerance = 100):
+def search( weight_limit, weight_tolerance, available_objects_qt, resources ):
+    if weight_limit <= 0:
+        raise ValueError
     if weight_tolerance <= 0:
+        raise ValueError
+    if available_objects_qt <= 0:
+        raise ValueError
+    if resources is None:
         raise ValueError
 
     ini_pop_qt = 200  #Usar 1000
@@ -148,50 +205,7 @@ def search(weight_tolerance = 100):
     #mutation_rate = 0.8  #Testando com 20%
     crossover_rate = 0.2 #Testando com 80%
 
-    exec_init = time.time()
-
-    print("\n##################################################################")
-    print("#                                                                #")
-    print("#                     Knapsack problem                           #")
-    print("#                                                                #")
-    print("##################################################################")
-
-    try:
-        weight_limit = int(float(input("\nKnapsack weight limit: ")))
-        if weight_limit <= 0:
-            print("\nKnapsack weight limit must be higher than zero!\n")
-            raise ValueError
-    except:
-        raise ValueError
-
-    try:
-        available_objects_qt = int(float(input("\nAvailable objects (limit: 1010): ")))
-        if available_objects_qt <= 0:
-            print("\nAvailable objects must be higher than zero!\n")
-            raise ValueError
-
-        else:    
-            if available_objects_qt > 1010:
-                print("Values higher than 1010 are forbiden!")
-                raise ValueError
-
-            elif available_objects_qt <= 15:
-                print("There are " + str(2 ** available_objects_qt) + " possible solutions for this products amount")
-            else:
-                possible_solutions = 2 ** available_objects_qt
-                search_years = possible_solutions / (3600 * 24 * 365 * 1000000)
-                print("There are {0:+5.2E} possible solutions for this products amount".format(possible_solutions))
-                if available_objects_qt > 44:
-                    print("\nIf we had a computer capable of processing 1.000.000 candidates each second")
-                    print("and considering that one year has (60s * 60m * 24h * 365d) 31.536.000 seconds")
-                    print("it would take {0:+5.2e} years to find the best solution.".format(search_years))
-                    print("Therefore, we'll search for just a good solution, not for the best one.")
-                    print("The good solution will be the candidate with the best benefit within the limit of weight\n")
-    except:
-        raise ValueError
-
-    obj_list = ObjectsList(available_objects_qt)
-    populat = create_initial_population(ini_pop_qt, obj_list)
+    populat = create_initial_population(ini_pop_qt, resources)
     population = sorted(populat, key = Candidate.get_benefit, reverse = True)
 
 #    print("Mostra a populacao inicial: ")
@@ -204,7 +218,7 @@ def search(weight_tolerance = 100):
     medium_fit_array = []
 
     #Repete este ciclo ate condicao de parada
-    while not stop_search(weight_limit, weight_tolerance, population, best_fit_array, medium_fit_array, generation, obj_list):
+    while not stop_search(weight_limit, weight_tolerance, population, best_fit_array, medium_fit_array, generation, resources ):
         #Cria nova população intermediaria com mutacao e crossover
         #Para manter a diversidade genetica a semente para a proxima geracao sera formada por 40% dos melhores candidatos atuais e 10% dos piores
         
@@ -220,17 +234,17 @@ def search(weight_tolerance = 100):
         if (crossover_qt % 2) != 0:
             crossover_qt = crossover_qt + 1
 
-        intermed_pop_crossover = apply_crossover(crossover_qt, cand_for_reproduction, obj_list)
+        intermed_pop_crossover = apply_crossover(crossover_qt, cand_for_reproduction, resources )
     
         #==>Reproducao por MUTAÇÃO
         mutation_qt = intermed_pop_qt - len(cand_for_reproduction) - crossover_qt
         
         #==>Selecao da proxima geracao de candidatos
-        intermed_pop_mutation = apply_mutation(mutation_qt, cand_for_reproduction, obj_list)
+        intermed_pop_mutation = apply_mutation(mutation_qt, cand_for_reproduction, resources)
     
         intermed_pop_mutation = np.append(cand_for_reproduction, intermed_pop_crossover)
         intermed_pop_mutation = np.append(intermed_pop_mutation, intermed_pop_mutation)
-        print("Size of intermed pop: {0}".format(len(intermed_pop_mutation)))
+#        print("Size of intermed pop: {0}".format(len(intermed_pop_mutation)))
 
         population = apply_selection(ini_pop_qt, weight_limit, intermed_pop_mutation)
 
@@ -238,22 +252,17 @@ def search(weight_tolerance = 100):
         generation = generation + 1
         xItera.append(generation)
 
-    #Mostra tempo de execucao
-    exec_end = time.time()
-    diff = exec_end - exec_init	
-    hours, r = divmod(diff, 3600)
-    minutes, seconds = divmod(r, 60)
-    print("Elapsed time: {hours:0>2}:{minutes:0>2}:{seconds:05.3f}".format(hours=int(hours), minutes=int(minutes), seconds=seconds))
-
+    
     #Mostra evolucao do fitness
-    plt.rcParams['figure.figsize'] = (8,4)
-    plt.plot(xItera, medium_fit_array, color='green')  #Fitness medio
-    plt.scatter(xItera, best_fit_array, marker="*", color='red') #Melhor fitness
-    plt.title('Benefit (fitness) evolution')
-    plt.xlabel('Iteration')
-    plt.ylabel('Fitness (benefit)')
-    plt.grid(True)
-    plt.show()
+ #   plt.rcParams['figure.figsize'] = (8,4)
+ #   plt.plot(xItera, medium_fit_array, color='green')  #Fitness medio
+ #   plt.scatter(xItera, best_fit_array, marker="*", color='red') #Melhor fitness
+ #   plt.title('Benefit (fitness) evolution')
+ #   plt.xlabel('Iteration')
+ #   plt.ylabel('Fitness (benefit)')
+ #   plt.grid(True)
+ #   plt.show()
+
     return "ok"
 
 
@@ -432,8 +441,65 @@ def create_initial_population(init_pop_qt, obj_list):
 
 
 if __name__ == '__main__':
-#    weight_tolerance = 100 #100 gramas
+    weight_tolerance = 100 #100 gramas
+    weight_limit = 10 #10 Kg
+    available_objects_qt = 10
 
-#    search(weight_tolerance)
-    search()
+    print("\n##################################################################")
+    print("#                                                                #")
+    print("#                     Knapsack problem                           #")
+    print("#                                                                #")
+    print("##################################################################")
+
+    try:
+        weight_limit = int(float(input("\nKnapsack weight limit (Kg): ")))
+        if weight_limit <= 0:
+            print("\nKnapsack weight limit must be higher than zero!\n")
+            raise ValueError
+    except:
+        raise ValueError
+
+    try:
+        available_objects_qt = int(float(input("\nAvailable objects (limit: 1010): ")))
+        if available_objects_qt <= 0:
+            print("\nAvailable objects must be higher than zero!\n")
+            raise ValueError
+
+        else:    
+            if available_objects_qt > 1010:
+                print("Values higher than 1010 are forbiden!")
+                raise ValueError
+
+            elif available_objects_qt <= 15:
+                print("There are " + str(2 ** available_objects_qt) + " possible solutions for this products amount")
+            else:
+                possible_solutions = 2 ** available_objects_qt
+                search_years = possible_solutions / (3600 * 24 * 365 * 1000000)
+                print("There are {0:+5.2E} possible solutions for this products amount".format(possible_solutions))
+                if available_objects_qt > 44:
+                    print("\nIf we had a computer capable of processing 1.000.000 candidates each second")
+                    print("and considering that one year has (60s * 60m * 24h * 365d) 31.536.000 seconds")
+                    print("it would take {0:+5.2e} years to find the best solution.".format(search_years))
+                    print("Therefore, we'll search for just a good solution, not for the best one.")
+                    print("The good solution will be the candidate with the best benefit within the limit of weight\n")
+    except:
+        raise ValueError
+
+    try:
+        pd_resources = ObjectsList( available_objects_qt )
+    except:
+        print("\nParameters load failure\n")
+        exit()
+
+    exec_init = time.time()
+
+    search( weight_limit, weight_tolerance, available_objects_qt, pd_resources )
     
+    print( pd_resources.get_selected_items())
+
+    #Mostra tempo de execucao
+    exec_end = time.time()
+    diff = exec_end - exec_init	
+    hours, r = divmod(diff, 3600)
+    minutes, seconds = divmod(r, 60)
+    print("Elapsed time: {hours:0>2}:{minutes:0>2}:{seconds:05.3f}".format(hours=int(hours), minutes=int(minutes), seconds=seconds))

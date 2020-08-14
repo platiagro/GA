@@ -1,0 +1,6 @@
+{
+  "dairy_cooperative/tests/test_cooperative_ga.py": true, 
+  "dairy_cooperative/tests/test_cooperative_ga_CSV.py": true, 
+  "knapsack_problem/tests/test_knapsack_ga.py": true, 
+  "large_harvest/tests/test_large_harvest_ga.py": true
+}
