@@ -12,9 +12,11 @@ from tsp.tsp_python_ga_csv import Candidate, Resources, stop_search, search, app
 
 
 #------------------------------------------------
-dict_dist = {'Cidade_001': {'Cidade_002': 1, 'Cidade_003': 2, 'Cidade_004': 4}, 'Cidade_002': {'Cidade_001': 1, 'Cidade_003': 5, 'Cidade_004': 6}, 'Cidade_003': {'Cidade_001': 2, 'Cidade_002': 5, 'Cidade_004': 7}, 'Cidade_004': {'Cidade_001': 4, 'Cidade_002': 6, 'Cidade_003': 7}}
+dict_dist = {'Origem': ['Cidade_001', 'Cidade_001', 'Cidade_001', 'Cidade_002', 'Cidade_002', 'Cidade_002', 'Cidade_003', 'Cidade_003', 'Cidade_003', 'Cidade_004', 'Cidade_004','Cidade_004'], 'Destino': ['Cidade_002', 'Cidade_003','Cidade_004', 'Cidade_001', 'Cidade_003', "Cidade_004", 'Cidade_001', 'Cidade_002', 'Cidade_004', 'Cidade_001', 'Cidade_002', 'Cidade_003'], 'KM':[1,2, 3, 1, 4, 5, 2, 4, 6, 3, 5, 6]}
+pd_dict = pd.DataFrame(data = dict_dist)
 #------------------------------------------------
-resource = Resources(dict_dist)
+
+resource = Resources(pd_dict)
 cand_full = Candidate( resource )
 
 best_fit_array_full = [1]
