@@ -32,7 +32,7 @@ class TestFiles(unittest.TestCase):
             nova_lista = Resources(None)
 #-----------------------------------------------------------
     def test_resources__init__ok(self):
-        result = Resources(resource)
+        result = Resources(pd_dict)
         self.assertNotEqual(result, "ok")    
 #-----------------------------------------------------------
 #-----------------------------------------------------------
@@ -68,8 +68,8 @@ class TestFiles(unittest.TestCase):
             search(None)
 #-----------------------------------------------------------
     def test_search_ok(self):
-        with self.assertRaises(ValueError):
-            search(resource)
+        result = search( resource )
+        self.assertEqual(result, "ok")
 #-----------------------------------------------------------
 #-----------------------------------------------------------
     def test_stop_search_pop_blank(self):
