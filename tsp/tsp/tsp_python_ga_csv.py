@@ -26,8 +26,10 @@ class Candidate:
             city_y = self.dna[id-1]
             try:
                 dist = dict_dist[city_x][city_y]
-            except:
+            except KeyError:
                 dist = dict_dist[city_y][city_x]
+            except:
+                raise ValueError    
             tot_dist += dist
         self.fitness = 1/tot_dist
 
@@ -53,7 +55,7 @@ class Candidate:
     def __init__( self, resources ):
         if resources is None:
             raise ValueError
-        
+
         self.dna = []
         self.generate_dna( resources )
 
@@ -93,8 +95,10 @@ class Resources:
             city_y = self.best_candidate.dna[pos + 1]
             try:
                 dist = self.dict_dist[city_x][city_y]
-            except:
+            except KeyError:
                 dist = self.dict_dist[city_y][city_x]
+            except:
+                raise ValueError 
 
             column_orig.append( city_x )
             column_dest.append( city_y )

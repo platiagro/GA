@@ -12,10 +12,9 @@ from tsp.tsp_python_ga_csv import Candidate, Resources, stop_search, search, app
 
 
 #------------------------------------------------
-obj = {'Origem': ['Cidade_001', 'Cidade_002','Cidade_003'], 'Destino': ['Cidade_002', 'Cidade_003','Cidade_004'], 'KM': [5, 6,7]}
-pd_resources = pd.DataFrame(data=obj)
+dict_dist = {'Cidade_001': {'Cidade_002': 1, 'Cidade_003': 2, 'Cidade_004': 4}, 'Cidade_002': {'Cidade_001': 1, 'Cidade_003': 5, 'Cidade_004': 6}, 'Cidade_003': {'Cidade_001': 2, 'Cidade_002': 5, 'Cidade_004': 7}, 'Cidade_004': {'Cidade_001': 4, 'Cidade_002': 6, 'Cidade_003': 7}}
 #------------------------------------------------
-resource = Resources(pd_resources)
+resource = Resources(dict_dist)
 cand_full = Candidate( resource )
 
 best_fit_array_full = [1]
@@ -31,7 +30,7 @@ class TestFiles(unittest.TestCase):
             nova_lista = Resources(None)
 #-----------------------------------------------------------
     def test_resources__init__ok(self):
-        result = Resources(pd_resources)
+        result = Resources(resource)
         self.assertNotEqual(result, "ok")    
 #-----------------------------------------------------------
 #-----------------------------------------------------------
