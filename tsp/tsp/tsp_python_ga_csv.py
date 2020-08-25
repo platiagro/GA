@@ -58,6 +58,7 @@ class Candidate:
 
         self.dna = []
         self.generate_dna( resources )
+        
 
 
 
@@ -477,7 +478,8 @@ if __name__ == '__main__':
     try:
         pd_resources = pd.read_csv( file_name )
         resources = Resources( pd_resources )
-    except:
+    except Exception as inst:
+        print(inst)
         print("\nParameters load failure\n")
         exit()
 
