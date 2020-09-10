@@ -1,0 +1,18 @@
+Arquivo de entrada de parâmetros para o Algoritmo Genético que sugere plantas a serem plantadas em uma horta
+============================================================================================================
+Este arquivo possui 1 seção que informa as plantas disponíveis para serem plantadas na horta até seu limite de espaço necessário x retorno esperado.
+
+Exemplo usando uma horta com limite de espaço de 2m2 e 10 tipos de plantas disponíveis:
+Obs.: os espaços necessários para cada pé neste arquivo são expressos em centímetros quadrados
+
+#Planta,Espaco,Beneficio
+P01_Alface,100,2
+P02_Couve,200,9
+P03_Acelga,300,10
+P04_Escarola,400,9
+P05_Hortela,500,4
+P06_Espinafre,600,1
+P07_Almeirao,700,10
+P08_Brocolis,800,2
+P09_CouveFlor,900,10
+P10_Rucula,50,4

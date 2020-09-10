@@ -1,0 +1,104 @@
+[Aba: Experiment.jpynb]
+
+[Seção: Nova Tarefa - Experimento]
+Autor: Oclair Prado
+Data: 20/ago/2020
+Assunto: Aplicação de Algoritmos Genéticos para o problema do caixeiro viajante
+
+[Seção: Declaração de parâmetros e hiperparâmetros]
+Nada a ser ajustado aqui
+
+[Seção: Acesso ao conjunto de dados]
+Nada a ser ajustado aqui
+
+[Seção: Acesso aos metadados do conjunto de dados]
+Nada a ser ajustado aqui
+
+[Seção: Conteúdo da tarefa]
+#Nesta seção devem ser adicionados os principais comandos da atividade
+#Primeito deve-se importar o arquivo com as classes do programa da mochila
+#Este arquivo deve estar disponível em algum local que a plataforma tem acesso. Por exemplo, GitHub
+
+! wget https://raw.githubusercontent.com/platiagro/GA/master/tsp/tsp/tsp_python_ga_csv.py
+
+#Também é necessário importar os métodos a serem usados na tarefa
+
+from tsp_python_ga_csv import Candidate, Resources, stop_search, search, apply_selection, apply_crossover, apply_mutation, create_initial_population
+
+resources = Resources( data )
+search( resources )
+
+[Seção: Salva alterações no conjunto de dados]
+Nada a ser ajustado aqui
+
+[Seção: Salva métricas]
+Nada a ser ajustado aqui
+
+[Seção: Salva modelo e outros resultados do treinamento]¶
+Nada a ser ajustado aqui
+
+==>Seções adicionais
+[Seção: Salva arquivo CSV com os resultados]
+#Deve ser criada nova seção seguindo os seguintes passos
+1) Criar nova célula clicando no ícone de adição no alto da janela
+2) Alterar o tipo da célula (no alto da janela) de Code para Markdown
+3) Inserir o título da seção: ## Salva arquivo com os resultados
+4) Inserir o comentário: Será gravado um arquivo com os resultados no container da experimentação, utilizando a função pandas.DataFrame.to_csv.
+5) Use Control+Enter para finalizar a edição desta célula
+6) Criar mais uma célula clicando no ícone de adição no alto da janela
+7) Inserir o comentário:
+   #Salva arquivo CSV com os resultados
+   #Será gravado um arquivo com os resultados no container da experimentação, utilizando a função pandas.DataFrame.to_csv.
+8) Inserir o código
+   df = resources.get_selected_route()
+   df.to_csv(f'/tmp/data/resultados.csv', index=False)
+   df.to_csv(f'resultados.csv', index=False)
+
+[Seção: Salva tabela com resultados]
+#Deve ser criada nova seção seguindo os seguintes passos
+1) Criar nova célula clicando no ícone de adição no alto da janela
+2) Alterar o tipo da célula (no alto da janela) de Code para Markdown
+3) Inserir o título da seção: ## Salva tabela com resultados
+4) Inserir o comentário: Utiliza a função save_figure do SDK da PlatIAgro para salvar figuras do matplotlib.
+5) Use Control+Enter para finalizar a edição desta célula
+6) Criar mais uma célula clicando no ícone de adição no alto da janela
+7) Inserir o comentário:
+8) Inserir o código
+from platiagro import save_figure
+import matplotlib.pyplot as plt
+​df = resources.get_selected_route()
+lin, col = df.shape
+
+def format_str_cell(text, max_len = 20):
+    return text[:max_len] + "..." if len(text) > max_len else text
+​
+fig, ax = plt.subplots(figsize=(col, 0.4*lin))
+plt.subplots_adjust(left=0.16, bottom=0.19, top=0.82)
+​
+fig.patch.set_visible(False)
+​
+mpl_table = ax.table(cellText = df.values, bbox = [0, 0, 1, 1], colLabels = df.columns, cellLoc = 'center')
+​
+mpl_table.auto_set_font_size(False)
+mpl_table.set_fontsize(8)
+​
+for k, cell in mpl_table._cells.items():
+    cell.set_edgecolor('w')
+    if k[0] == 0 or k[1] < 0:
+        cell.set_text_props(weight = 'bold', color = 'w')
+        cell.set_facecolor('#40466e')
+    else:
+        cell.set_facecolor('#f1f1f2')
+        
+ax.axis('off')
+ax.axis('tight')
+fig.tight_layout()
+plt.show()
+#---------------------------
+#save_figure(figure = fig)
+
+
+[Aba Deployment.jpynb]
+Nada a ser alterado aqui.
+Este tipo de tarefa não deve ser implantado.
+As execuções desta tarefa devem ser executadas somente nas telas de experimentos

@@ -1,0 +1,27 @@
+Arquivo de entrada de parâmetros para o Algoritmo Genético que sugere produtos a serem fabricados em uma cooperativa de laticínios
+==================================================================================================================================
+Este arquivo possui apenas 1 seção que informa os produtos disponíveis para serem fabricados até o limite de insumos (que neste caso é o leite).
+
+Exemplo usando uma cooperativa de laticínios com limite de 5.300 litros de leite por semana e dispõe de apenas 40h de trabalho por semana de seus associados:
+
+#Produtos,Leite (L),Tempo (H),Margem (R$)
+Produto_01,4800,20,576
+Produto_02,300,9,84
+Produto_03,100,8,60
+Produto_04,12,5,14
+Produto_05,30,4,22
+Produto_06,2000,10,300
+Produto_07,3000,15,400
+Produto_08,50,12,30
+Produto_09,25,7,17
+Produto_10,8,6,15
+Produto_11,10,12,40
+Produto_12,20,1,11
+Produto_13,24,3,28
+Produto_14,5,7,37
+Produto_15,21,10,34
+Produto_16,14,4,36
+Produto_17,6,12,9
+Produto_18,8,1,32
+Produto_19,20,6,36
+Produto_20,5,6,32

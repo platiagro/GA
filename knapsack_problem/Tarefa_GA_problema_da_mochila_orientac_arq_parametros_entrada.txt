@@ -1,0 +1,18 @@
+Arquivo de entrada de parâmetros para o Algoritmo Genético que sugere itens a serem inserido em uma mochila
+===========================================================================================================
+Este arquivo possui 1 seção que informa os ítens disponíveis para serem inseridos na mochila até seu limite de peso.
+
+Exemplo usando uma mochila com limite de peso de 5Kg e 10 itens que podem ser inseridos na mochila:
+Obs.: os pesos neste arquivo são expressos em gramas
+
+#Item,Peso,Beneficio
+Item_01,662,2
+Item_02,581,9
+Item_03,620,10
+Item_04,547,9
+Item_05,960,4
+Item_06,871,1
+Item_07,581,10
+Item_08,833,2
+Item_09,376,10
+Item_10,509,4

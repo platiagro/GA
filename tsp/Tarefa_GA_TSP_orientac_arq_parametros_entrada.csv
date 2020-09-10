@@ -1,0 +1,14 @@
+Arquivo de entrada de parâmetros para o Algoritmo Genético que sugere uma rota para um veículo buscando economia de combustível
+===============================================================================================================================
+Este arquivo possui 1 seção que informa as distâncias entre as cidades que devem ser visitadas.
+
+Exemplo usando uma lista de quatro cidades que devem ser visitadas:
+Obs.: as distâncias neste arquivo estão em Km
+
+#Origem,Destino,Dist (KM)
+Cidade_001,Cidade_002,1
+Cidade_001,Cidade_003,5
+Cidade_001,Cidade_004,4
+Cidade_002,Cidade_003,2
+Cidade_002,Cidade_004,6
+Cidade_003,Cidade_004,3

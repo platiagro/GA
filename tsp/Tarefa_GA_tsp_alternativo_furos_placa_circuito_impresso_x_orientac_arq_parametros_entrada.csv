@@ -1,0 +1,63 @@
+Arquivo de entrada de parâmetros para o Algoritmo Genético que sugere ordem otimizada 
+para criar furos de tamanhos diferentes em uma placa de circuito impresso
+================================================================================================
+Este arquivo possui 1 seção que informa as distâncias entre as cidades que devem ser visitadas.
+
+Exemplo usando uma lista de 10 furos com 2 tamanhos diferentes. 
+Espera-se que furos de mesmo tamanho sejam criados em sequência:
+Obs.: as distâncias neste arquivo estão em mm
+
+#Origem,Destino,Dist (mm)
+Furo_a_01,Furo_a_02,1
+Furo_a_01,Furo_a_03,13
+Furo_a_01,Furo_a_04,14
+Furo_a_01,Furo_a_05,10
+Furo_a_01,Furo_b_01,15
+Furo_a_01,Furo_b_02,16
+Furo_a_01,Furo_b_03,17
+Furo_a_01,Furo_b_04,18
+Furo_a_01,Furo_b_05,19
+
+Furo_a_02,Furo_a_03,2
+Furo_a_02,Furo_a_04,20
+Furo_a_02,Furo_a_05,11
+Furo_a_02,Furo_b_01,21
+Furo_a_02,Furo_b_02,22
+Furo_a_02,Furo_b_03,23
+Furo_a_02,Furo_b_04,24
+Furo_a_02,Furo_b_05,25
+
+Furo_a_03,Furo_a_04,3
+Furo_a_03,Furo_a_05,12
+Furo_a_03,Furo_b_01,26
+Furo_a_03,Furo_b_02,27
+Furo_a_03,Furo_b_03,28
+Furo_a_03,Furo_b_04,29
+Furo_a_03,Furo_b_05,30
+
+Furo_a_04,Furo_a_05,4
+Furo_a_04,Furo_b_01,31
+Furo_a_04,Furo_b_02,32
+Furo_a_04,Furo_b_03,33
+Furo_a_04,Furo_b_04,34
+Furo_a_04,Furo_b_05,35
+
+Furo_a_05,Furo_b_01,5
+Furo_a_05,Furo_b_02,36
+Furo_a_05,Furo_b_03,37
+Furo_a_05,Furo_b_04,38
+Furo_a_05,Furo_b_05,39
+
+Furo_b_01,Furo_b_02,6
+Furo_b_01,Furo_b_03,40
+Furo_b_01,Furo_b_04,41
+Furo_b_01,Furo_b_05,42
+
+Furo_b_02,Furo_b_03,7
+Furo_b_02,Furo_b_04,43
+Furo_b_02,Furo_b_05,44
+
+Furo_b_03,Furo_b_04,8
+Furo_b_03,Furo_b_05,45
+
+Furo_b_04,Furo_b_05,9
