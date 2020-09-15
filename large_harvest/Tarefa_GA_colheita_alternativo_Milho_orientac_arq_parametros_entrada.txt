@@ -1,0 +1,31 @@
+Arquivo de entrada de parâmetros para o Algoritmo Genético que sugere alocações de campos e colhedoras de milho
+================================================================================================================
+Este arquivo possui 3 seções:
+->(Mill)Informações sobre os consumidores da colheita. Normalmente moendas, fornos e prensas
+->(Field)Informações sobre os campos. Uma fazenda normalmente é dividida em diversos campos ou talhões e apenas uma parte destes é selecionada para colheita
+->(Harve)Informações sobre as colhedoras mecânicas. Normalmente são usadas várias colhedoras em cada campo
+
+Todas as seções possuem as mesmas colunas. Elas assumem o valor zero nas células onde não for aplicável.
+Exemplo usando uma fazenda com 2 prensas, 6 campos e 10 colhedoras:
+Obs.1: os espaços foram inseridos apenas para facilitar a leitura. Devem ser retirados no arquivo real.
+Obs.2: os pesos neste arquivo são expressos em toneladas
+
+#Resource   , Grinding_harvest_limit, Field_harvest_capacity, Field_hour_capacity, Harvester_hour_capacity
+Mill_01     , 110000                , 0                     , 0                  , 0
+Mill_02     , 100000                , 0                     , 0                  , 0
+Field_01    , 0                     , 40000                 , 120                , 0
+Field_02    , 0                     , 40000                 , 120                , 0
+Field_03    , 0                     , 40000                 , 120                , 0
+Field_04    , 0                     , 40000                 , 120                , 0
+Field_05    , 0                     , 40000                 , 120                , 0
+Field_06    , 0                     , 40000                 , 120                , 0
+Harvester_01, 0                     , 0                     , 0                  , 30
+Harvester_02, 0                     , 0                     , 0                  , 30
+Harvester_03, 0                     , 0                     , 0                  , 30
+Harvester_04, 0                     , 0                     , 0                  , 30
+Harvester_05, 0                     , 0                     , 0                  , 30
+Harvester_06, 0                     , 0                     , 0                  , 30
+Harvester_07, 0                     , 0                     , 0                  , 30
+Harvester_08, 0                     , 0                     , 0                  , 30
+Harvester_09, 0                     , 0                     , 0                  , 30
+Harvester_10, 0                     , 0                     , 0                  , 30
